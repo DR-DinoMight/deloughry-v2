@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/SkipLink";
 import siteConfig from "@/site-config";
+import NowPlaying from "src/components/NowPlaying";
 
 interface Props {
 	meta: SiteMeta;
@@ -55,6 +56,7 @@ const {
 		<SkipLink />
 		<Header />
 		<main id="main" class="flex-1">
+      <NowPlaying  client:visible/>
 			<slot />
 		</main>
 		<Footer />

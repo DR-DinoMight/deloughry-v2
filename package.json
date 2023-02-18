@@ -46,10 +46,17 @@
 	},
 	"dependencies": {
 		"@astrojs/prefetch": "^0.1.1",
+		"@astrojs/react": "^2.0.2",
 		"@astrojs/rss": "^2.0.0",
+		"@types/react": "^18.0.27",
+		"@types/react-dom": "^18.0.10",
+		"@types/spotify-api": "^0.0.20",
 		"astro": "2.0.2",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
 		"satori": "0.1.2",
 		"satori-html": "^0.3.2",
-		"sharp": "^0.31.3"
+		"sharp": "^0.31.3",
+		"swr": "^2.0.3"
 	}
 }
