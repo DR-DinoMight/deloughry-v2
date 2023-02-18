@@ -25,9 +25,16 @@ module.exports = {
 				link: "var(--theme-link)",
 				accent: "var(--theme-accent)",
 				"accent-2": "var(--theme-accent-2)",
+				twitch: "var(--twitch)",
+				twitter: "var(--twitter)",
+				mastodon: "var(--mastodon)",
+				youtube: "var(--youtube)",
+				claw: "var(--claw)",
+				github: "var(--github)",
 			},
 			fontFamily: {
 				// Add any custom fonts here
+				mono: ["JetBrains Mono"],
 				sans: [...fontFamily.sans],
 				serif: [...fontFamily.serif],
 			},
@@ -101,8 +108,9 @@ module.exports = {
 				".cactus-link": {
 					"@apply bg-[size:100%_6px] bg-bottom bg-repeat-x": {},
 					backgroundImage:
-						"linear-gradient(transparent,transparent 5px,var(--theme-text) 5px,var(--theme-text))",
+						"linear-gradient(transparent,transparent 5px,var(--theme-accent) 5px,var(--theme-accent))",
 					"&:hover": {
+						color: "var(--theme-link)",
 						backgroundImage:
 							"linear-gradient(transparent,transparent 4px,var(--theme-link) 4px,var(--theme-link))",
 					},
