@@ -19,6 +19,7 @@ interface Props {
 
 const { post } = Astro.props;
 const { Content } = await post.render();
+export const prerender = true;
 ---
 
 <PostLayout post={post}>
