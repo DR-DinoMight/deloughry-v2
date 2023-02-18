@@ -7,11 +7,11 @@ import siteConfig from "@/site-config";
 import { getFormattedDate } from "@/utils";
 
 const monoFontReg = await fetch(
-	"https://api.fontsource.org/v1/fonts/roboto-mono/latin-400-normal.ttf"
+	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-400-normal.ttf"
 );
 
 const monoFontBold = await fetch(
-	"https://api.fontsource.org/v1/fonts/roboto-mono/latin-700-normal.ttf"
+	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-800-normal.ttf"
 );
 
 const ogOptions: SatoriOptions = {
@@ -21,13 +21,13 @@ const ogOptions: SatoriOptions = {
 	embedFont: true,
 	fonts: [
 		{
-			name: "Roboto Mono",
+			name: "JetBrains Mono",
 			data: await monoFontReg.arrayBuffer(),
 			weight: 400,
 			style: "normal",
 		},
 		{
-			name: "Roboto Mono",
+			name: "JetBrains Mono",
 			data: await monoFontBold.arrayBuffer(),
 			weight: 700,
 			style: "normal",
@@ -36,32 +36,22 @@ const ogOptions: SatoriOptions = {
 };
 
 const markup = (title: string, pubDate: string) => html`<div
-	tw="flex flex-col w-full h-full bg-[#1d1f21] text-[#c9cacc]"
+	tw="flex flex-col w-full h-full bg-[#191919] text-[#e5e7eb]"
 >
 	<div tw="flex flex-col flex-1 w-full p-10 justify-center">
-		<p tw="text-2xl mb-6">${pubDate}</p>
+		<p tw="text-2xl mb-6 text-[#00f701]">${pubDate}</p>
 		<h1 tw="text-6xl font-bold leading-snug text-white">${title}</h1>
 	</div>
-	<div tw="flex items-center justify-between w-full p-10 border-t border-[#2bbc89] text-xl">
+	<div tw="flex items-center justify-between w-full p-10 border-t border-[#00f701] text-xl">
 		<div tw="flex items-center">
-			<svg height="60" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 480">
-				<path
-					d="M181.334 93.333v-40L226.667 80v40l-45.333-26.667ZM136.001 53.333 90.667 26.667v426.666L136.001 480V53.333Z"
-					fill="#B04304"
-				></path>
-				<path
-					d="m136.001 119.944 45.333-26.667 45.333 26.667-45.333 26.667-45.333-26.667ZM90.667 26.667 136.001 0l45.333 26.667-45.333 26.666-45.334-26.666ZM181.334 53.277l45.333-26.666L272 53.277l-45.333 26.667-45.333-26.667ZM0 213.277l45.333-26.667 45.334 26.667-45.334 26.667L0 213.277ZM136 239.944l-45.333-26.667v53.333L136 239.944Z"
-					fill="#FF5D01"
-				></path>
-				<path
-					d="m136 53.333 45.333-26.666v120L226.667 120V80L272 53.333V160l-90.667 53.333v240L136 480V306.667L45.334 360V240l45.333-26.667v53.334L136 240V53.333Z"
-					fill="#53C68C"
-				></path>
-				<path d="M45.334 240 0 213.334v120L45.334 360V240Z" fill="#B04304"></path>
-			</svg>
+			<img
+				src="https://res.cloudinary.com/dr-dinomight/image/upload/v1676719004/192x192_hdl78r.png"
+				height="60px"
+				width="60px"
+			/>
 			<p tw="ml-3 font-semibold">${siteConfig.title}</p>
 		</div>
-		<p>by ${siteConfig.author}</p>
+		<p class="font-bold leading-snug text-[#00f701]">by ${siteConfig.author}</p>
 	</div>
 </div>`;
 

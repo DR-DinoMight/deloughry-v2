@@ -1,10 +1,10 @@
 const siteMeta = {
-	author: "Matthew Deloughry",
-	title: "Home Of Matt",
-	description: "An opinionated starter theme for Astro",
+	author: "Matthew Peck-Deloughry",
+	title: "Deloughry.co.uk",
+	description: "A little hovel of Mine",
 	lang: "en-GB",
 	ogLocale: "en_GB",
-	githubUrl: "https://github.com/chrismwilliams/astro-theme-cactus",
+	githubUrl: "https://github.com/DR-DinoMight/deloughry-v2",
 	themeColorLight: "#DDDFDF",
 	themeColorDark: "#191919",
 };
