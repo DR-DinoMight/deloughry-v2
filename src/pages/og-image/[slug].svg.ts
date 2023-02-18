@@ -2,7 +2,6 @@ import type { APIContext, GetStaticPathsResult } from "astro";
 import { getCollection, getEntryBySlug } from "astro:content";
 import satori, { SatoriOptions } from "satori";
 import { html } from "satori-html";
-import { Resvg } from "@resvg/resvg-js";
 import siteConfig from "@/site-config";
 import { getFormattedDate } from "@/utils";
 
@@ -62,9 +61,8 @@ export async function get({ params: { slug } }: APIContext) {
 		weekday: "long",
 	});
 	const svg = await satori(markup(title, postDate), ogOptions);
-	const png = new Resvg(svg).render().asPng();
 	return {
-		body: png,
+		body: svg,
 		encoding: "binary",
 	};
 }
