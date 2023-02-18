@@ -9,6 +9,9 @@ import prefetch from "@astrojs/prefetch";
 import react from "@astrojs/react";
 
 // https://astro.build/config
+import netlify from "@astrojs/netlify/functions";
+
+// https://astro.build/config
 export default defineConfig({
 	site: "https://deloughry.co.uk",
 	markdown: {
@@ -37,4 +40,5 @@ export default defineConfig({
 			exclude: ["@resvg/resvg-js"],
 		},
 	},
+	adapter: netlify(),
 });
