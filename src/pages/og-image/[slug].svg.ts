@@ -4,7 +4,7 @@ import satori, { SatoriOptions } from "satori";
 import { html } from "satori-html";
 import siteConfig from "@/site-config";
 import { getFormattedDate } from "@/utils";
-
+export const prerender = true;
 const monoFontReg = await fetch(
 	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-400-normal.ttf"
 );
