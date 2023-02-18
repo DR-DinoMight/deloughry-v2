@@ -16,7 +16,6 @@
 		"@astrojs/mdx": "^0.15.1",
 		"@astrojs/sitemap": "^1.0.0",
 		"@astrojs/tailwind": "3.0.0",
-		"@resvg/resvg-js": "^2.2.0",
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/line-clamp": "^0.4.2",
 		"@tailwindcss/typography": "^0.5.8",
