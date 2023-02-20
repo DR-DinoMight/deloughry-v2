@@ -16,8 +16,8 @@ export default defineConfig({
 	site: "https://deloughry.co.uk",
 	markdown: {
 		shikiConfig: {
-			theme: "dracula",
-			wrap: true,
+			theme: "poimandres",
+			wrap: false,
 		},
 	},
 	output: "server",
