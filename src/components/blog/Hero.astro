@@ -10,10 +10,11 @@ const { content } = Astro.props;
 
 const datetime = content.data.publishDate.toISOString();
 const postDate = getFormattedDate(content.data.publishDate);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<h1 class="title">{content.data.title}</h1>
-<time datetime={datetime}>{postDate}</time>
+<h1 class="title p-name">{content.data.title}</h1>
+<a class="u-url" href={canonicalURL} ><time datetime={datetime} class="dt-published">{datetime}</time></a>
 {
 	!!content.data.tags?.length && (
 		<div class="inline before:content-['|']">
