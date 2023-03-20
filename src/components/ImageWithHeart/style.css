@@ -1,17 +1,24 @@
 
 .thumbsUp {
-  animation: like 1s ease-in-out alternate infinite;
-  -webkit-animation: like 1s ease-in-out alternate infinite;
+  animation: like 1.5s linear alternate infinite;
+  -webkit-animation: like 1.5s linear alternate infinite;
 }
 
 @keyframes like {
-  100% {
-    transform: rotate(-15deg) scale(1.3);
-    -webkit-transform: rotate(-15deg) scale(1.3);
-    -moz-transform: rotate(-15deg) scale(1.3);
-    -ms-transform: rotate(-15deg) scale(1.3);
-    -o-transform: rotate(-15deg) scale(1.3);
+  0% {
+    transform: rotate(-4deg) scale(1.005);
     filter: blur(0.2px);
-    -webkit-filter: blur(0.2px);
+    fill: rgba(255,255,255,0.9);
+  }
+  50% {
+    transform: rotate(0deg) scale(1);
+    filter: blur(0px);
+    fill: rgba(255,255,255,0.6);
+  }
+  100% {
+    transform: rotate(4deg) scale(1.005);
+    filter: blur(0.2px);
+    fill: rgba(255,255,255,0.9);
+
   }
 }

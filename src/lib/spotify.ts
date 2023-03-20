@@ -34,7 +34,7 @@ const getAccessToken = async () => {
 			Authorization: `Basic ${basic}`,
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
-		body: `grant_type=refresh_token&refresh_token=${refresh_token}&user-library-read`,
+		body: `grant_type=refresh_token&refresh_token=${refresh_token}&user-library-read&playlist-modify-private&playlist-modify-public`,
 	});
 	const json = await response.json();
 	return json.access_token;
@@ -138,4 +138,59 @@ const areTracksLiked = async (ids: string[]) => {
 }
 
 
-export { getCurrentlyPlaying, getTopTracks, getTopArtists, getLastSong, getLikedTracks, areTracksLiked };
+const getAllPlaylists = async () => {
+  let response = await fetch(`${BASE_URL}/me/playlists`, {
+    headers: {
+      ...await authHeaders(),
+      'Content-Type': 'application/json'
+    }
+  });
+
+  let json = await response.json();
+  let items = [];
+  items.push(...json.items);
+
+  let loop = false;
+  if (json.next !== null) {
+    loop = true;
+    while (loop) {
+      let url = json.next;
+      response = await fetch(url, {
+        headers: {
+          ...await authHeaders(),
+          'Content-Type': 'application/json'
+        }
+      });
+      json = await response.json();
+      items.push(...json.items);
+
+      if (json.next === null) loop = false;
+    }
+  }
+
+  return items;
+
+}
+
+
+const createPlaylist = async (name: string) => {
+
+  let response = await fetch(`${BASE_URL}/users/fblade1987/playlists`, {
+    headers: {
+      ...await authHeaders(),
+      'Content-Type': 'application/json'
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      name,
+      public: true,
+      description: 'Liked songs for ' + name
+    })
+  });
+
+  return response.status == 200;
+
+}
+
+
+export { getCurrentlyPlaying, getTopTracks, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist };
