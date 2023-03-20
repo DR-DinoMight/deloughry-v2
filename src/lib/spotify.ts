@@ -34,7 +34,7 @@ const getAccessToken = async () => {
 			Authorization: `Basic ${basic}`,
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
-		body: `grant_type=refresh_token&refresh_token=${refresh_token}&user-library-read&playlist-modify-private&playlist-modify-public`,
+		body: `grant_type=refresh_token&refresh_token=${refresh_token}&user-library-read&user-top-read&playlist-modify-private&playlist-modify-public`,
 	});
 	const json = await response.json();
 	return json.access_token;
@@ -126,6 +126,37 @@ const getLikedTracks = async (totalTracks: number = 20, offset: number = 0) => {
   };
 }
 
+const getTrackUrisForPlaylist = async (playlistId: string) => {
+  const uris: string[] = [];
+  let nextUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+
+  while (nextUrl) {
+    const response = await fetch(nextUrl, {
+      headers: {
+        ...await authHeaders(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch playlist tracks: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    // extract URIs of the tracks in the current page and add them to the array
+    for (const item of data.items) {
+      if (item.track && item.track.uri) {
+        uris.push(item.track.uri);
+      }
+    }
+
+    // check if there are more pages
+    nextUrl = data.next;
+  }
+
+  return uris;
+}
+
 const areTracksLiked = async (ids: string[]) => {
   const response = await fetch(`${BASE_URL}/me/tracks/contains?ids=${ids.join(',')}`, {
     headers: {
@@ -188,9 +219,23 @@ const createPlaylist = async (name: string) => {
     })
   });
 
-  return response.status == 200;
+  return response.ok;
+}
 
+const addTracksToPlaylist = async (id: string, tracks: string[]) => {
+
+  let response = await fetch(`${BASE_URL}/playlists/${id}/tracks`, {
+    headers: {
+      ...await authHeaders(),
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      uris: tracks
+    })
+  });
+
+  return response.ok;
 }
 
 
-export { getCurrentlyPlaying, getTopTracks, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist };
+export { getCurrentlyPlaying, getTopTracks, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist, getTrackUrisForPlaylist, addTracksToPlaylist };
