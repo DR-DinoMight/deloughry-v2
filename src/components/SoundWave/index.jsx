@@ -38,7 +38,7 @@ const SoundWave = ({ progress, isPlaying }) => {
 	};
 
 	return (
-		<div className={`sw${isPlaying ? "" : " sw--pause"}`}>
+		<div className={`sw ${isPlaying ? "" : " sw--pause"}`}>
 			<svg
 				ref={ref}
 				width="302"

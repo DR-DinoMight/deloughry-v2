@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 
-import { getCurrentlyPlaying } from "src/lib/spotify";
+import { areTracksLiked, getCurrentlyPlaying } from "src/lib/spotify";
 
 export const get: APIRoute = async ({}) => {
 	const spotifyResponse = await getCurrentlyPlaying();
@@ -10,6 +10,7 @@ export const get: APIRoute = async ({}) => {
 		const isPlaying = song.is_playing;
 
 		const isMusic = song.currently_playing_type === "track";
+    const isLiked = isPlaying && isMusic && song.item?.id ? await areTracksLiked([song.item?.id]) : false;
 
 		if (song && song.item && isPlaying && isMusic) {
 			return new Response(
@@ -26,6 +27,7 @@ export const get: APIRoute = async ({}) => {
 						duration: song.item.duration_ms,
 						progress: song.progress_ms,
 						uri: song.item.external_urls.spotify,
+            isLiked: isLiked[0]
 					},
 				}),
 				{
