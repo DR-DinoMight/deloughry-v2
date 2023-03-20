@@ -49,6 +49,8 @@
 		"@astrojs/prefetch": "^0.1.1",
 		"@astrojs/react": "^2.0.2",
 		"@astrojs/rss": "^2.0.0",
+		"@netlify/planetscale": "^1.0.0",
+		"@planetscale/database": "^1.6.0",
 		"@types/react": "^18.0.27",
 		"@types/react-dom": "^18.0.10",
 		"@types/spotify-api": "^0.0.20",
