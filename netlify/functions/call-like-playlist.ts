@@ -6,8 +6,6 @@ const myHandler: Handler = async (event: HandlerEvent, context: HandlerContext) 
     {
       method: 'POST'
     });
-
-    console.log(await response.json());
 };
 
 const handler = schedule("*/5 * * * *", myHandler)

@@ -1,3 +1,5 @@
+import { Playlists } from "../data/models/playlist";
+import { addTracksToPlaylistDb } from "../data/models/playlist_tracks";
 import type { SpotifyTrack } from "./types/spotify";
 
 const client_id = import.meta.env.SPOTIFY_CLIENT_ID;
@@ -104,17 +106,17 @@ const getLikedTracks = async (totalTracks: number = 20, offset: number = 0) => {
 
   const json = await response.json();
 
-  const tracks: SpotifyTrack[] = [];
+  const tracks = [];
 
   tracks.push(...json.items.map((item) => {
     return {
       id: item.track.id,
       name: item.track.name,
-      artists: item.track.artists.map((artist) => artist.name),
+      artists: item.track.artists.map((artist) => {return {id: artist.id, name: artist.name}}),
       images: item.track.album.images,
       uri: item.track.uri,
       preview_url: item.track.preview_url,
-      external_url: item.track.external_urls.spotify,
+      external_urls: item.track.external_urls,
       release_date: item.release_date,
       added_at: item.added_at
     } ;
@@ -126,9 +128,10 @@ const getLikedTracks = async (totalTracks: number = 20, offset: number = 0) => {
   };
 }
 
-const getTrackUrisForPlaylist = async (playlistId: string) => {
-  const uris: string[] = [];
+const getTracksForPlaylist = async (playlistId: string) => {
+  const tracks: any[] = [];
   let nextUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+
 
   while (nextUrl) {
     const response = await fetch(nextUrl, {
@@ -138,15 +141,16 @@ const getTrackUrisForPlaylist = async (playlistId: string) => {
     });
 
     if (!response.ok) {
+
       throw new Error(`Failed to fetch playlist tracks: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
 
-    // extract URIs of the tracks in the current page and add them to the array
+    // extract ids of the tracks in the current page and add them to the array
     for (const item of data.items) {
-      if (item.track && item.track.uri) {
-        uris.push(item.track.uri);
+      if (item.track) {
+        tracks.push(item.track);
       }
     }
 
@@ -154,8 +158,9 @@ const getTrackUrisForPlaylist = async (playlistId: string) => {
     nextUrl = data.next;
   }
 
-  return uris;
+  return tracks;
 }
+
 
 const areTracksLiked = async (ids: string[]) => {
   const response = await fetch(`${BASE_URL}/me/tracks/contains?ids=${ids.join(',')}`, {
@@ -234,8 +239,13 @@ const addTracksToPlaylist = async (id: string, tracks: string[]) => {
     })
   });
 
-  return response.ok;
+  if (response.ok){
+    return true;
+  }
+
+
+  return false;
 }
 
 
-export { getCurrentlyPlaying, getTopTracks, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist, getTrackUrisForPlaylist, addTracksToPlaylist };
+export { getCurrentlyPlaying, getTopTracks, getTracksForPlaylist, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist, addTracksToPlaylist };
