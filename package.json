@@ -4,7 +4,7 @@
 	"private": false,
 	"type": "module",
 	"scripts": {
-		"setup": "npx vite-node --project tsconfig.setup.json setup.ts",
+		"setup": "npx vite-node --config setup.vite.config.js setup.ts",
 		"dev": "astro dev",
 		"start": "astro dev",
 		"sync": "astro sync",
