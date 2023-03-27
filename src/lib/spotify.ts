@@ -116,7 +116,7 @@ const getLikedTracks = async (totalTracks: number = 20, offset: number = 0) => {
       images: item.track.album.images,
       uri: item.track.uri,
       preview_url: item.track.preview_url,
-      external_urls: item.track.external_urls,
+      external_urls: item.track.album.external_urls,
       release_date: item.release_date,
       added_at: item.added_at
     } ;
