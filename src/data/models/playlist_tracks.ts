@@ -55,7 +55,7 @@ export async function addTracksToPlaylistDb(id: string, tracks: any[]) {
           artwork: track?.images ?? track.album.images,
           uri: track?.uri,
           previewUrl: track?.preview_url ?? '',
-          externalUrl: track?.album?.external_urls?.spotify ?? '',
+          externalUrl: track?.album?.external_urls['spotify'] ?? '',
           addedAt: new Date()
       });
 
