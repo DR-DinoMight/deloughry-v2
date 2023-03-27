@@ -1,6 +1,9 @@
+import { Playlists } from "@/data/models/playlist";
+import { addTracksToPlaylistDb } from "@/data/models/playlist_tracks";
 import type { APIContext, APIRoute } from "astro";
 
-import { addTracksToPlaylist, createPlaylist, getAllPlaylists, getLikedTracks, getTrackUrisForPlaylist } from "src/lib/spotify";
+import { addTracksToPlaylist, createPlaylist, getAllPlaylists, getLikedTracks, getTracksForPlaylist, getTrackUrisForPlaylist } from "src/lib/spotify";
+import tigrisDB from "src/lib/tigris";
 
 export const post: APIRoute = async ({ request }) => {
 
@@ -26,7 +29,7 @@ export const post: APIRoute = async ({ request }) => {
   let currentDate =  `${monthNames[month]} '${year.toString().slice(-2)}`
 
   const playlists = await getAllPlaylists();
-  let playlistID = null;
+  let playlist;
 
   //get liked tracks and filter all of them for the current month, return a list of uris in csv format
   const likedTracks = (await getLikedTracks(50,0))?.tracks.filter(track => {
@@ -34,21 +37,19 @@ export const post: APIRoute = async ({ request }) => {
     return addedAt.getMonth ()== date.getMonth() && addedAt.getFullYear() == date.getFullYear()
   });
 
-  let uris = likedTracks.map((track: any) => track.uri);
 
   if (playlists.findIndex( x => x.name === currentDate) == -1) {
-    playlistID = createPlaylist(currentDate);
-  } else  {
-    playlistID = playlists.find(x => x.name === currentDate).id;
-
-    // get the playlist tracks, return a list of uris in csv format
-    const playlistTracks = await getTrackUrisForPlaylist(playlistID);
-
-    // filter the liked tracks with the playlist tracks and remove already present tracks from the list
-    uris = uris.filter( uri =>  !playlistTracks.includes(uri) );
+    createPlaylist(currentDate);
   }
 
-  if (uris.length > 0 && !(await addTracksToPlaylist(playlistID, uris))) {
+  playlist = playlists.find(x => x.name === currentDate);
+  // get the playlist tracks, return a list of uris in csv format
+  const playlistTracks = await getTracksForPlaylist(playlist.id);
+
+  // filter the liked tracks with the playlist tracks and remove already present tracks from the list
+  let tracksToAdd = likedTracks.filter( likedTrack =>  !playlistTracks.some(playlistTrack => playlistTrack.id == likedTrack.id) );
+
+  if (tracksToAdd.length > 0 && !(await addTracksToPlaylist(playlist.id, tracksToAdd.map(x => x.uri))) ) {
     return new Response(
       JSON.stringify({
         message: 'Failed to add tracks to playlist',
@@ -62,9 +63,11 @@ export const post: APIRoute = async ({ request }) => {
     );
   }
 
+  await addTracksToPlaylistDb(playlist.id, tracksToAdd);
+
   return new Response(
 		JSON.stringify({
-			message: 'Successfully added tracks to playlist, count:' + uris.length
+			message: 'Successfully added tracks to playlist, count:' + tracksToAdd.length
 		}),
 		{
 			status: 200,
