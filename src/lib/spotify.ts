@@ -1,6 +1,6 @@
 import { Playlists } from "../data/models/playlist";
-import { addTracksToPlaylistDb } from "../data/models/playlist_tracks";
-import type { SpotifyTrack } from "./types/spotify";
+import { currentYearSpotifyized } from "./stringHelper";
+import tigrisDB from "./tigris";
 
 const client_id = import.meta.env.SPOTIFY_CLIENT_ID;
 const client_secret = import.meta.env.SPOTIFY_CLIENT_SECRET;
@@ -248,4 +248,52 @@ const addTracksToPlaylist = async (id: string, tracks: string[]) => {
 }
 
 
-export { getCurrentlyPlaying, getTopTracks, getTracksForPlaylist, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist, addTracksToPlaylist };
+const getPlaylistsfromDB = async (name: string = '', exact: boolean = false) => {
+  const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
+
+  const playlistsHits = new Array<Playlists>();
+
+  const search = exact ? `"${name}"` : name;
+
+  const playlists = dbPlaylists.search({
+    q: search,
+    searchFields: ["name"],
+    sort: [
+      {
+        field: "createdAt",
+        order: "$desc"
+      },
+    ],
+  });
+
+  for await (const result of playlists) {
+    result.hits.forEach((hit) => playlistsHits.push(hit.document));
+  }
+  return playlistsHits;
+}
+
+const getPlaylistfromDB = async (id: string) => {
+  const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
+
+  return await dbPlaylists.findOne({ filter: { id }});
+}
+
+const getYearSoFarPlaylistsFromDB = async () => {
+  return await getPlaylistsfromDB(currentYearSpotifyized(), false);
+}
+
+const getPastJamsPlaylistsFromDB = async () => {
+  return await getPlaylistsfromDB('Jams -', false);
+}
+
+
+
+const getPastJamsPlaylists = async () => {
+  const playlists = await getAllPlaylists();
+
+  return playlists.filter( (playlist) => playlist.name.startsWith("Jams -")  && playlist.owner.id == "fblade1987");
+}
+
+
+
+export {getPlaylistfromDB, getPlaylistsfromDB, getPastJamsPlaylistsFromDB, getPastJamsPlaylists, getYearSoFarPlaylistsFromDB, getCurrentlyPlaying, getTopTracks, getTracksForPlaylist, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist, addTracksToPlaylist };

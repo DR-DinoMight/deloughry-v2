@@ -1,5 +1,4 @@
-import { Playlists } from "@/data/models/playlist";
-import { addTracksToPlaylistDb } from "@/data/models/playlist_tracks";
+import { addTracksToPlaylistDb, Playlists } from "@/data/models/playlist";
 import type { APIContext, APIRoute } from "astro";
 
 import { addTracksToPlaylist, createPlaylist, getAllPlaylists, getLikedTracks, getTracksForPlaylist, getTrackUrisForPlaylist } from "src/lib/spotify";
