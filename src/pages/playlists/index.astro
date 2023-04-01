@@ -1,0 +1,37 @@
+---
+import PageLayout from "@/layouts/Base";
+import {Playlists} from "@/data/models/playlist";
+import {getYearSoFarPlaylistsFromDB, getPastJamsPlaylistsFromDB} from '../../lib/spotify'
+import ImageWithBadge from "src/components/ImageWithBadge";
+
+const playlists : Playlists[] = await getYearSoFarPlaylistsFromDB();
+const pastPlaylists : Playlists[] = await getPastJamsPlaylistsFromDB();
+const meta = {
+	title: "Oops! You found a missing page!",
+	description: "Oops! It looks like this page is lost in space!",
+};
+export const prerender = true;
+---
+
+<PageLayout meta={meta}>
+  <h1 class="title mb-6">Year so far...</h1>
+  <ul class="flex gap-4">
+  {playlists.map(playlist => {
+    return <li class=" w-1/4">
+      <a href={`/playlists/${playlist.id}`}>
+        <ImageWithBadge client:load imageUrl={playlist.artwork} underText={playlist.name} />
+      </a>
+      </li>
+    })}
+  </ul>
+  <h1 class="title my-6">Past Jams</h1>
+  <ul class="flex flex-wrap">
+  {pastPlaylists.map(playlist => {
+    return <li class="w-1/4 px-2 mb-4">
+      <a href={`/playlists/${playlist.id}`}>
+        <ImageWithBadge client:load imageUrl={playlist.artwork} underText={playlist.name} />
+      </a>
+      </li>
+    })}
+  </ul>
+</PageLayout>

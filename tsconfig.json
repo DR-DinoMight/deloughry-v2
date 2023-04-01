@@ -24,6 +24,9 @@
       "@/stores/*": [
         "src/stores/*"
       ],
+      "@/lib/*": [
+        "src/lib/*"
+      ],
       "@/data/*": [
         "src/data/*"
       ],

@@ -1,0 +1,42 @@
+---
+import PageLayout from "@/layouts/Base";
+import type { GetStaticPathsResult } from "astro";
+import {getPlaylistsfromDB, getTracksForPlaylist} from '../../lib/spotify'
+import { Picture } from "@astrojs/image/components";
+
+
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+	const params = []
+
+  for await (const playlist of await getPlaylistsfromDB()) {
+    params.push({
+      params: { playlist: playlist.id},
+      props: { playlist }
+    });
+  };
+
+	return params;
+}
+
+const { playlist } = Astro.props;
+
+const meta = {
+	title: "P!",
+};
+
+export const prerender = true;
+---
+
+<PageLayout meta={meta}>
+  <h1 class="title mb-6">{playlist.name}</h1>
+
+  <div class="flex flex-row gap-4">
+    <div class="w-1/4">
+      <Picture src={playlist.artwork} widths={[640,300,60]} aspectRatio="1:1" alt={`Playlist Artwork`} />
+    </div>
+    <div class="flex-1">
+      <h2>Tracks</h2>
+    </div>
+  </div>
+
+</PageLayout>
