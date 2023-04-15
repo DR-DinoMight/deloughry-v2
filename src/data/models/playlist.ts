@@ -106,7 +106,7 @@ export const getPlaylistfromDB = async (id: string, tx?: Session) => {
 	return await dbPlaylists.findOne(query);
 };
 
-export async function addTracksToPlaylistDb(id: string, tracks: any[]) {
+export async function addTracksToPlaylistDb(id: string, tracks: any[], fromAPI: bool = false) {
 	const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
 	const playlists = await getAllPlaylists();
 	const playlist = playlists.find((x) => x.id === id);
@@ -149,6 +149,10 @@ export async function addTracksToPlaylistDb(id: string, tracks: any[]) {
 			}
 
 			console.log("Inserting or updating tracks : " + tracksInDB.length + "/" + tracks.length);
+
+			if (fromAPI && import.meta.env.BUILD_HOOK) {
+				fetch(import.meta.env.BUILD_HOOK);
+			}
 		}
 
 		// tx.commit();

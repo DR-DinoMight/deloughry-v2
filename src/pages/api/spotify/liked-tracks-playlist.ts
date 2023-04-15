@@ -75,7 +75,7 @@ export const post: APIRoute = async ({ request }) => {
 		);
 	}
 
-	await addTracksToPlaylistDb(playlist.id, tracksToAdd);
+	await addTracksToPlaylistDb(playlist.id, tracksToAdd, true);
 
 	return new Response(
 		JSON.stringify({
