@@ -1,7 +1,7 @@
 ---
 import ThemeToggle from "../ThemeToggle.astro";
 import { Image } from "@astrojs/image/components";
-import logoImg from '../../assets/logo-small.png';
+import logoImg from "../../assets/logo-small.png";
 
 const url = new URL(Astro.request.url);
 
@@ -10,18 +10,18 @@ const menuLinks = [
 		title: "Home",
 		path: "/",
 	},
-  {
-    title: "About",
-    path: "/about",
-  },
 	{
-    title: "Blog",
+		title: "About",
+		path: "/about",
+	},
+	{
+		title: "Blog",
 		path: "/posts",
 	},
-  {
-    title: "Playground",
-    path: "/playground",
-  },
+	{
+		title: "Playground",
+		path: "/playground",
+	},
 ];
 ---
 
@@ -45,19 +45,18 @@ const menuLinks = [
 	<div class="flex sm:flex-col">
 		<a
 			href="https://deloughry.co.uk"
-      rel="author"
+			rel="author"
 			class="inline-flex items-center grayscale hover:filter-none sm:relative sm:inline-block"
 			aria-current={url.pathname === "/" ? "page" : false}
 		>
-      <Image
-        src={logoImg}
-        alt="A dino skull"
-        loading="eager"
-        class="mr-3 w-8 sm:absolute sm:left-[-4.5rem] sm:mr-0  sm:w-16"
+			<Image
+				src={logoImg}
+				alt="A dino skull"
+				loading="eager"
+				class="mr-3 w-8 sm:absolute sm:left-[-4.5rem] sm:mr-0 sm:w-16"
 				aria-hidden="true"
-      />
+			/>
 			<span class="text-xl font-bold sm:text-2xl">Matthew Peck-Deloughry</span>
-
 		</a>
 		<nav
 			id="navigation-menu"
@@ -68,7 +67,7 @@ const menuLinks = [
 				menuLinks.map((link) => (
 					<a
 						href={link.path}
-						class="py-4 px-4 sm:py-0 sm:hover:underline hover:text-link"
+						class="py-4 px-4 hover:text-link sm:py-0 sm:hover:underline"
 						aria-current={url.pathname === link.path ? "page" : false}
 						rel="prefetch"
 					>

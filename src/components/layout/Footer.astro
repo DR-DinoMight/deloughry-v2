@@ -8,18 +8,18 @@ const menuLinks = [
 		title: "Home",
 		path: "/",
 	},
-  {
-    title: "About",
-    path: "/about",
-  },
 	{
-    title: "Blog",
+		title: "About",
+		path: "/about",
+	},
+	{
+		title: "Blog",
 		path: "/posts",
 	},
-  {
-    title: "Playground",
-    path: "/playground",
-  },
+	{
+		title: "Playground",
+		path: "/playground",
+	},
 ];
 ---
 
@@ -34,17 +34,17 @@ const menuLinks = [
 		aria-label="More on this site"
 		class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500"
 	>
-  {
-    menuLinks.map((link) => (
-      <a
-        href={link.path}
-        class="px-4 py-2 sm:py-0 sm:px-2 sm:hover:text-link sm:hover:underline"
-        aria-current={url.pathname === link.path ? "page" : false}
-        rel="prefetch"
-      >
-        {link.title}
-      </a>
-    ))
-  }
+		{
+			menuLinks.map((link) => (
+				<a
+					href={link.path}
+					class="px-4 py-2 sm:py-0 sm:px-2 sm:hover:text-link sm:hover:underline"
+					aria-current={url.pathname === link.path ? "page" : false}
+					rel="prefetch"
+				>
+					{link.title}
+				</a>
+			))
+		}
 	</nav>
 </footer>

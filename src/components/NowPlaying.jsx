@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import SoundWave from "./SoundWave";
-import {ImageWithHeart} from "./ImageWithHeart";
+import { ImageWithHeart } from "./ImageWithHeart";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -39,7 +39,11 @@ export default function NowPlaying() {
 		>
 			{data?.isPlaying && (
 				<div className="space-around animation-slide-in-top mb-4 flex w-full items-center space-x-0 overflow-hidden rounded-lg bg-zinc-200 p-2 align-middle shadow-lg dark:bg-zinc-700 sm:space-x-2">
-					<ImageWithHeart image={data?.song?.albumArt[2].url} className="relative h-[70px] mr-2" isLiked={data?.song?.isLiked} />
+					<ImageWithHeart
+						image={data?.song?.albumArt[2].url}
+						className="relative mr-2 h-[70px]"
+						isLiked={data?.song?.isLiked}
+					/>
 					<div>
 						<span className="flex-col items-center sm:flex-row">
 							{data?.isPlaying ? (
