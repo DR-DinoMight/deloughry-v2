@@ -1,17 +1,15 @@
 ---
 import PageLayout from "@/layouts/Base";
 import type { GetStaticPathsResult } from "astro";
-import {useTigrisCollection, useTigrisClient} from '@tigrisdata/astro';
+import {useTigrisCollection} from '@tigrisdata/astro';
 import type { Playlists } from "@/data/models/playlist";
 import type { Track } from "@/data/models/tracks";
-import { Picture } from "@astrojs/image/components";
+import ImageWithBadge from "src/components/ImageWithBadge";
 import type { SearchQuery, SearchIterator } from "@tigrisdata/core";
-import  { PlayIcon } from "src/components/ImageWithBadge/play-icon";
 import Tracks from "src/components/Tracks";
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
 	const params = [];
-
   const playlistCollection = await useTigrisCollection<Playlists>('playlists');
   const playlistsCursor = playlistCollection.findMany({});
   const playlists = await playlistsCursor.toArray();
@@ -49,20 +47,15 @@ export const prerender = true;
 
 <PageLayout meta={meta}>
 	<h1 class="title mb-6">{playlist.name}</h1>
-  <a href="/playlists" class="mb-4 hover:text-link sm:hover:underline">&lt; Back</a>
-	<div class="flex flex-row gap-4 mt-6">
-		<div class="w-1/6">
-      <a href={playlist.externalUrl} class="hover:text-link" target="_blank">
-			<Picture
-				src={playlist.artwork}
-				widths={[640, 300, 60]}
-				aspectRatio="1:1"
-				alt={`Playlist Artwork`}
-			/>
-      <span class="mt-2 flex flex-row gap-2 hover:fill-link"><PlayIcon className="w-[20px] fill-accent mr-2" /> Play on Spotify</span></a>
+  <a href="/playlists" class="mb-4 cactus-link">&lt; Back</a>
+	<div class="flex flex-col sm:flex-row gap-4 mt-6">
+		<div class="w-full sm:w-1/4">
+      <a href={playlist.externalUrl} class="cactus-link " target="_blank">
+        <ImageWithBadge client:load imageUrl={playlist.artwork} underText="Play on Spotify" />
+      </a>
 		</div>
 		<div class="flex-1">
-			<h2>Tracks ({tracks.length ?? 0})</h2>
+			<h2 class="flex justify-between sm:justify-start my-4 sm:gap-4"><span>Tracks</span><span class="text-accent">({tracks.length ?? 0})</span></h2>
       {
         tracks && (
         <>

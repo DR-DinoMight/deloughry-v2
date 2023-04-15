@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { PlayIcon } from "./ImageWithBadge/play-icon";
 import { StopIcon } from "./ImageWithBadge/stop-icon";
 
@@ -33,9 +32,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   return (
     <span>
       {!isPlaying ? (
-        <button onClick={handlePlay}><PlayIcon className="w-[10px] fill-accent mr-2" /></button>
+        <button onClick={handlePlay}><PlayIcon className="w-[10px] fill-accent mr-2 hover:fill-link" /></button>
       ) : (
-        <button onClick={handleStop}><StopIcon className="w-[10px] fill-accent mr-2" /></button>
+        <button onClick={handleStop}><StopIcon className="w-[10px] fill-link mr-2 hover:fill-accent" /></button>
       )}
       <audio src={src} autoPlay={isPlaying} />
     </span>

@@ -37,10 +37,6 @@
 		@apply mx-auto flex h-full w-full max-w-3xl flex-col bg-bgColor px-8 pt-16 font-mono font-normal text-textColor antialiased;
 	}
 
-	a {
-		@apply text-accent;
-	}
-
 	.astro-code {
 		@apply w-full;
 	}
