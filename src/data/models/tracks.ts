@@ -94,12 +94,11 @@ export const upsertTrack = async (spotifyData, playlistId: string) => {
 		);
 	} else {
 		trackData.playlists.push(playlistId);
-		console.log("new Tracks", trackData);
 		track = await dbTracks.insertOne(trackData, tx);
 	}
 	const tigrisClient = new Tigris();
 	const search = tigrisClient.getSearch();
-  const tracksSearch = await search.createOrUpdateIndex<Track>(Track);
+	const tracksSearch = await search.createOrUpdateIndex<Track>(Track);
 	const result = await tracksSearch.createOrReplaceOne(track);
 
 	tx.commit();
