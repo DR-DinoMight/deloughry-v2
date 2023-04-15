@@ -152,9 +152,12 @@ export async function addTracksToPlaylistDb(id: string, tracks: any[], fromAPI =
 
 			if (fromAPI) {
 				console.log("building");
-				fetch(import.meta.env.BUILD_HOOK, {
-					method: "POST",
-				});
+				fetch(
+					`${import.meta.env.BUILD_HOOK}?trigger_title=New+Song+or+playlist+Added&clear_cache=true`,
+					{
+						method: "POST",
+					}
+				);
 			}
 		}
 
