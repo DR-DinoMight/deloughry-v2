@@ -39,10 +39,10 @@ const { headings } = await post.render();
 
 <BaseLayout meta={{ title, description, articleDate, ogImage: socialImage }}>
 	<div class="sm:grid sm:grid-flow-col sm:grid-cols-[5fr] sm:items-start sm:gap-x-10">
-		<article class="break-words h-entry">
+		<article class="h-entry break-words">
 			<div id="blog-hero"><BlogHero content={post} /></div>
 			<div
-				class="prose prose-sm prose-cactus prose-headings:font-semibold prose-headings:before:absolute w-full prose-headings:before:text-accent prose-headings:before:content-['#'] prose-th:before:content-none"
+				class="prose prose-sm prose-cactus w-full prose-headings:font-semibold prose-headings:before:absolute prose-headings:before:text-accent prose-headings:before:content-['#'] prose-th:before:content-none"
 			>
 				<slot />
 			</div>

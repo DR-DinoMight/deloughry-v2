@@ -1,29 +1,29 @@
 .sw--pause line {
-  animation: none !important;
+	animation: none !important;
 }
 
 .sw line {
-  transform-origin: center;
-  transition: stroke 0.5s ease-in;
-  animation: sound 0.4s ease-out infinite alternate-reverse;
-  @apply dark:stroke-white dark:opacity-10 stroke-gray-500
+	transform-origin: center;
+	transition: stroke 0.5s ease-in;
+	animation: sound 0.4s ease-out infinite alternate-reverse;
+	@apply stroke-gray-500 dark:stroke-white dark:opacity-10;
 }
 
 .sw line.sw__full {
-  @apply stroke-accent dark:opacity-100
+	@apply stroke-accent dark:opacity-100;
 }
 
 @media screen and (max-width: 600px) {
-  .sw > svg {
-    width: 90%;
-  }
+	.sw > svg {
+		width: 90%;
+	}
 }
 
 @keyframes sound {
-  0% {
-    transform: scaleY(0);
-  }
-  100% {
-    transform: scaleY(0.9);
-  }
+	0% {
+		transform: scaleY(0);
+	}
+	100% {
+		transform: scaleY(0.9);
+	}
 }

@@ -53,6 +53,7 @@
 		"@astrojs/rss": "^2.0.0",
 		"@netlify/planetscale": "^1.0.0",
 		"@planetscale/database": "^1.6.0",
+		"@tigrisdata/astro": "^1.0.0",
 		"@tigrisdata/core": "^1.0.0-beta.37",
 		"@types/react": "^18.0.27",
 		"@types/react-dom": "^18.0.10",

@@ -13,8 +13,10 @@ const postDate = getFormattedDate(content.data.publishDate);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<h1 class="title p-name">{content.data.title}</h1>
-<a class="u-url" href={canonicalURL} ><time datetime={datetime} class="dt-published">{datetime}</time></a>
+<h1 class="p-name title">{content.data.title}</h1>
+<a class="u-url" href={canonicalURL}
+	><time datetime={datetime} class="dt-published">{datetime}</time></a
+>
 {
 	!!content.data.tags?.length && (
 		<div class="inline before:content-['|']">
@@ -41,11 +43,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 						class="cactus-link inline-block before:content-['#']"
 						aria-label={`View more blogs with the tag ${tag}`}
 						href={`/tags/${tag}`}
-					>{tag}</a>
+					>
+						{tag}
+					</a>
 					{i < content.data.tags.length - 1 && ", "}
 				</>
 			))}
 		</div>
 	)
 }
-<p class="mt-8 text-lg border-l-4 border-accent pl-4">{content.data.description}</p>
+<p class="mt-8 border-l-4 border-accent pl-4 text-lg">{content.data.description}</p>

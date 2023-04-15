@@ -6,15 +6,9 @@ import type { Artist, Track } from "./tracks";
 
 @TigrisCollection("playlistTracks")
 export class PlaylistTracks {
-  @PrimaryKey(TigrisDataTypes.STRING, {order: 1})
-  playlistId!: string;
+	@PrimaryKey(TigrisDataTypes.STRING, { order: 1 })
+	playlistId!: string;
 
-  @PrimaryKey(TigrisDataTypes.STRING, {order: 1})
-  trackId!: string;
-
-  @Field(TigrisDataTypes.DATE_TIME, { timestamp: "createdAt" })
-  createdAt?: Date;
-
-  @Field(TigrisDataTypes.DATE_TIME, { timestamp: "updatedAt" })
-  updatedAt?: Date;
+	@PrimaryKey(TigrisDataTypes.STRING, { order: 1 })
+	trackId!: string;
 }

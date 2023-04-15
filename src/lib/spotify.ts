@@ -1,4 +1,4 @@
-import { Playlists } from "../data/models/playlist";
+import { Playlists, getPlaylistsfromDB } from "../data/models/playlist";
 import { currentYearSpotifyized } from "./stringHelper";
 import tigrisDB from "./tigris";
 
@@ -45,17 +45,17 @@ const getAccessToken = async () => {
 const authHeaders = async () => {
 	const accessToken = await getAccessToken();
 
-  return {
-    Authorization: `Bearer ${accessToken}`,
-  }
-}
+	return {
+		Authorization: `Bearer ${accessToken}`,
+	};
+};
 
 // GET CURRENTLY PLAYING
 const getCurrentlyPlaying = async (): Promise<SpotifyApi.CurrentlyPlayingObject | undefined> => {
 	const response = await fetch(NOW_PLAYING_URL, {
-    headers : {
-      ... await authHeaders(),
-    }
+		headers: {
+			...(await authHeaders()),
+		},
 	});
 	if (response.status === 204 || response.status > 404) {
 		return undefined;
@@ -67,7 +67,7 @@ const getCurrentlyPlaying = async (): Promise<SpotifyApi.CurrentlyPlayingObject 
 const getLastSong = async (): Promise<SpotifyApi.TrackObjectFull | undefined> => {
 	const response = await fetch(RECENTLY_PLAYED_URL, {
 		headers: {
-			... await authHeaders(),
+			...(await authHeaders()),
 		},
 	});
 	const json = await response.json();
@@ -78,7 +78,7 @@ const getLastSong = async (): Promise<SpotifyApi.TrackObjectFull | undefined> =>
 const getTopTracks = async (): Promise<SpotifyApi.TrackObjectFull[] | undefined> => {
 	const response = await fetch(TOP_PLAYING_TRACK_URL, {
 		headers: {
-			... await authHeaders(),
+			...(await authHeaders()),
 		},
 	});
 	const json = await response.json();
@@ -89,7 +89,7 @@ const getTopTracks = async (): Promise<SpotifyApi.TrackObjectFull[] | undefined>
 const getTopArtists = async () => {
 	const response = await fetch(TOP_PLAYING_ARTIST_URL, {
 		headers: {
-			... await authHeaders(),
+			...(await authHeaders()),
 		},
 	});
 	const json = await response.json();
@@ -97,203 +97,189 @@ const getTopArtists = async () => {
 };
 
 const getLikedTracks = async (totalTracks: number = 20, offset: number = 0) => {
-  const response = await fetch(`${BASE_URL}/me/tracks?limit=${totalTracks}&offset=${offset}`, {
-    headers: {
-      ...await authHeaders(),
-      'Content-Type': 'application/json'
-    }
-  });
+	const response = await fetch(`${BASE_URL}/me/tracks?limit=${totalTracks}&offset=${offset}`, {
+		headers: {
+			...(await authHeaders()),
+			"Content-Type": "application/json",
+		},
+	});
 
-  const json = await response.json();
+	const json = await response.json();
 
-  const tracks = [];
+	const tracks = [];
 
-  tracks.push(...json.items.map((item) => {
-    return {
-      id: item.track.id,
-      name: item.track.name,
-      artists: item.track.artists.map((artist) => {return {id: artist.id, name: artist.name}}),
-      images: item.track.album.images,
-      uri: item.track.uri,
-      preview_url: item.track.preview_url,
-      external_urls: item.track.album.external_urls,
-      release_date: item.release_date,
-      added_at: item.added_at
-    } ;
-  }))
+	tracks.push(
+		...json.items.map((item) => {
+			return {
+				id: item.track.id,
+				name: item.track.name,
+				artists: item.track.artists.map((artist) => {
+					return { id: artist.id, name: artist.name };
+				}),
+				images: item.track.album.images,
+				uri: item.track.uri,
+				preview_url: item.track.preview_url,
+				external_urls: item.track.album.external_urls,
+				release_date: item.release_date,
+				added_at: item.added_at,
+			};
+		})
+	);
 
 	return {
-    tracks,
-    nextOffset: json?.next !== null ? json?.offset + totalTracks : null
-  };
-}
+		tracks,
+		nextOffset: json?.next !== null ? json?.offset + totalTracks : null,
+	};
+};
 
 const getTracksForPlaylist = async (playlistId: string) => {
-  const tracks: any[] = [];
-  let nextUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+	const tracks: any[] = [];
+	let nextUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
 
+	while (nextUrl) {
+		const response = await fetch(nextUrl, {
+			headers: {
+				...(await authHeaders()),
+			},
+		});
 
-  while (nextUrl) {
-    const response = await fetch(nextUrl, {
-      headers: {
-        ...await authHeaders(),
-      },
-    });
+		if (!response.ok) {
+			throw new Error(`Failed to fetch playlist tracks: ${response.status} ${response.statusText}`);
+		}
 
-    if (!response.ok) {
+		const data = await response.json();
 
-      throw new Error(`Failed to fetch playlist tracks: ${response.status} ${response.statusText}`);
-    }
+		// extract ids of the tracks in the current page and add them to the array
+		for (const item of data.items) {
+			if (item.track) {
+				tracks.push(item.track);
+			}
+		}
 
-    const data = await response.json();
+		// check if there are more pages
+		nextUrl = data.next;
+	}
 
-    // extract ids of the tracks in the current page and add them to the array
-    for (const item of data.items) {
-      if (item.track) {
-        tracks.push(item.track);
-      }
-    }
-
-    // check if there are more pages
-    nextUrl = data.next;
-  }
-
-  return tracks;
-}
-
+	return tracks;
+};
 
 const areTracksLiked = async (ids: string[]) => {
-  const response = await fetch(`${BASE_URL}/me/tracks/contains?ids=${ids.join(',')}`, {
-    headers: {
-      ...await authHeaders(),
-      'Content-Type': 'application/json'
-    }
-  });
+	const response = await fetch(`${BASE_URL}/me/tracks/contains?ids=${ids.join(",")}`, {
+		headers: {
+			...(await authHeaders()),
+			"Content-Type": "application/json",
+		},
+	});
 
-  return await response.json();
-}
-
+	return await response.json();
+};
 
 const getAllPlaylists = async () => {
-  let response = await fetch(`${BASE_URL}/me/playlists`, {
-    headers: {
-      ...await authHeaders(),
-      'Content-Type': 'application/json'
-    }
-  });
+	let response = await fetch(`${BASE_URL}/me/playlists`, {
+		headers: {
+			...(await authHeaders()),
+			"Content-Type": "application/json",
+		},
+	});
 
-  let json = await response.json();
-  let items = [];
-  items.push(...json.items);
+	let json = await response.json();
+	let items = [];
+	items.push(...json.items);
 
-  let loop = false;
-  if (json.next !== null) {
-    loop = true;
-    while (loop) {
-      let url = json.next;
-      response = await fetch(url, {
-        headers: {
-          ...await authHeaders(),
-          'Content-Type': 'application/json'
-        }
-      });
-      json = await response.json();
-      items.push(...json.items);
+	let loop = false;
+	if (json.next !== null) {
+		loop = true;
+		while (loop) {
+			let url = json.next;
+			response = await fetch(url, {
+				headers: {
+					...(await authHeaders()),
+					"Content-Type": "application/json",
+				},
+			});
+			json = await response.json();
+			items.push(...json.items);
 
-      if (json.next === null) loop = false;
-    }
-  }
+			if (json.next === null) loop = false;
+		}
+	}
 
-  return items;
-
-}
-
+	return items;
+};
 
 const createPlaylist = async (name: string) => {
+	let response = await fetch(`${BASE_URL}/users/fblade1987/playlists`, {
+		headers: {
+			...(await authHeaders()),
+			"Content-Type": "application/json",
+		},
+		method: "POST",
+		body: JSON.stringify({
+			name,
+			public: true,
+			description: "Liked songs for " + name,
+		}),
+	});
 
-  let response = await fetch(`${BASE_URL}/users/fblade1987/playlists`, {
-    headers: {
-      ...await authHeaders(),
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      name,
-      public: true,
-      description: 'Liked songs for ' + name
-    })
-  });
-
-  return response.ok;
-}
+	return response.ok;
+};
 
 const addTracksToPlaylist = async (id: string, tracks: string[]) => {
+	let response = await fetch(`${BASE_URL}/playlists/${id}/tracks`, {
+		headers: {
+			...(await authHeaders()),
+		},
+		method: "POST",
+		body: JSON.stringify({
+			uris: tracks,
+		}),
+	});
 
-  let response = await fetch(`${BASE_URL}/playlists/${id}/tracks`, {
-    headers: {
-      ...await authHeaders(),
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      uris: tracks
-    })
-  });
+	if (response.ok) {
+		return true;
+	}
 
-  if (response.ok){
-    return true;
-  }
-
-
-  return false;
-}
-
-
-const getPlaylistsfromDB = async (name: string = '', exact: boolean = false) => {
-  const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
-
-  const playlistsHits = new Array<Playlists>();
-
-  const search = exact ? `"${name}"` : name;
-
-  const playlists = dbPlaylists.search({
-    q: search,
-    searchFields: ["name"],
-    sort: [
-      {
-        field: "createdAt",
-        order: "$desc"
-      },
-    ],
-  });
-
-  for await (const result of playlists) {
-    result.hits.forEach((hit) => playlistsHits.push(hit.document));
-  }
-  return playlistsHits;
-}
-
-const getPlaylistfromDB = async (id: string) => {
-  const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
-
-  return await dbPlaylists.findOne({ filter: { id }});
-}
+	return false;
+};
 
 const getYearSoFarPlaylistsFromDB = async () => {
-  return await getPlaylistsfromDB(currentYearSpotifyized(), false);
-}
+	return await getPlaylistsfromDB(currentYearSpotifyized(), false);
+};
 
 const getPastJamsPlaylistsFromDB = async () => {
-  return await getPlaylistsfromDB('Jams -', false);
-}
+	return await getPlaylistsfromDB("Jams -", false);
+};
 
+const getYearSoFarPlaylists = async () => {
+	const playlists = await getAllPlaylists();
 
+	return playlists.filter(
+		(playlist) =>
+			playlist.name.endsWith(currentYearSpotifyized()) && playlist.owner.id == "fblade1987"
+	);
+};
 
 const getPastJamsPlaylists = async () => {
-  const playlists = await getAllPlaylists();
+	const playlists = await getAllPlaylists();
 
-  return playlists.filter( (playlist) => playlist.name.startsWith("Jams -")  && playlist.owner.id == "fblade1987");
-}
+	return playlists.filter(
+		(playlist) => playlist.name.startsWith("Jams -") && playlist.owner.id == "fblade1987"
+	);
+};
 
-
-
-export {getPlaylistfromDB, getPlaylistsfromDB, getPastJamsPlaylistsFromDB, getPastJamsPlaylists, getYearSoFarPlaylistsFromDB, getCurrentlyPlaying, getTopTracks, getTracksForPlaylist, getTopArtists, getLastSong, getLikedTracks, areTracksLiked, getAllPlaylists, createPlaylist, addTracksToPlaylist };
+export {
+	getPastJamsPlaylistsFromDB,
+	getYearSoFarPlaylists,
+	getPastJamsPlaylists,
+	getYearSoFarPlaylistsFromDB,
+	getCurrentlyPlaying,
+	getTopTracks,
+	getTracksForPlaylist,
+	getTopArtists,
+	getLastSong,
+	getLikedTracks,
+	areTracksLiked,
+	getAllPlaylists,
+	createPlaylist,
+	addTracksToPlaylist,
+};

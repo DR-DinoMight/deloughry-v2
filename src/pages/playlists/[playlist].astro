@@ -1,42 +1,76 @@
 ---
 import PageLayout from "@/layouts/Base";
 import type { GetStaticPathsResult } from "astro";
-import {getPlaylistsfromDB, getTracksForPlaylist} from '../../lib/spotify'
+import {useTigrisCollection, useTigrisClient} from '@tigrisdata/astro';
+import type { Playlists } from "@/data/models/playlist";
+import type { Track } from "@/data/models/tracks";
 import { Picture } from "@astrojs/image/components";
-
+import type { SearchQuery, SearchIterator } from "@tigrisdata/core";
+import  { PlayIcon } from "src/components/ImageWithBadge/play-icon";
+import Tracks from "src/components/Tracks";
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-	const params = []
+	const params = [];
 
-  for await (const playlist of await getPlaylistsfromDB()) {
-    params.push({
-      params: { playlist: playlist.id},
-      props: { playlist }
-    });
-  };
+  const playlistCollection = await useTigrisCollection<Playlists>('playlists');
+  const playlistsCursor = playlistCollection.findMany({});
+  const playlists = await playlistsCursor.toArray();
+
+	for await (const playlist of playlists) {
+    const trackCollection = await useTigrisCollection<Track>('tracks');
+    const query: SearchQuery<Track> = {
+      filter: { playlists: playlist.id},
+      hitsPerPage: 250
+    };
+
+    const resultIterable: SearchIterator<Track> = await trackCollection.search(query);
+    const tracks = [];
+    for await (const result of resultIterable) {
+      tracks.push(...result.hits.map((h) => h.document));
+    }
+		params.push({
+			params: { playlist: playlist.id },
+			props: { playlist, tracks },
+		});
+	}
 
 	return params;
 }
 
-const { playlist } = Astro.props;
 
+const { playlist, tracks } = Astro.props;
 const meta = {
-	title: "P!",
+	title: playlist.name,
+  description: `Playlist of liked songs for the month ${playlist.name}`,
 };
 
 export const prerender = true;
 ---
 
 <PageLayout meta={meta}>
-  <h1 class="title mb-6">{playlist.name}</h1>
+	<h1 class="title mb-6">{playlist.name}</h1>
+  <a href="/playlists" class="mb-4 hover:text-link sm:hover:underline">&lt; Back</a>
+	<div class="flex flex-row gap-4 mt-6">
+		<div class="w-1/6">
+      <a href={playlist.externalUrl} class="hover:text-link" target="_blank">
+			<Picture
+				src={playlist.artwork}
+				widths={[640, 300, 60]}
+				aspectRatio="1:1"
+				alt={`Playlist Artwork`}
+			/>
+      <span class="mt-2 flex flex-row gap-2 hover:fill-link"><PlayIcon className="w-[20px] fill-accent mr-2" /> Play on Spotify</span></a>
+		</div>
+		<div class="flex-1">
+			<h2>Tracks ({tracks.length ?? 0})</h2>
+      {
+        tracks && (
+        <>
+          <Tracks client:load tracks={tracks}/>
+        </>
+      )
+    }
 
-  <div class="flex flex-row gap-4">
-    <div class="w-1/4">
-      <Picture src={playlist.artwork} widths={[640,300,60]} aspectRatio="1:1" alt={`Playlist Artwork`} />
-    </div>
-    <div class="flex-1">
-      <h2>Tracks</h2>
-    </div>
-  </div>
-
+		</div>
+	</div>
 </PageLayout>

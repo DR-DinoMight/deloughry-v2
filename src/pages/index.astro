@@ -4,7 +4,7 @@ import PageLayout from "@/layouts/Base";
 import PostPreview from "@/components/blog/PostPreview";
 import SocialList from "@/components/SocialList";
 import { Image } from "@astrojs/image/components";
-import MeImage from '../assets/image.webp';
+import MeImage from "../assets/image.webp";
 import { sortMDByDate } from "@/utils";
 
 const MAX_POSTS = 10;
@@ -14,23 +14,34 @@ export const prerender = true;
 ---
 
 <PageLayout meta={{ title: "Home" }}>
-  <section class="flex gap-6 mt-8 h-card">
-    <a class="hidden u-url" rel="me" href="https://deloughry.co.uk/">Matthew Peck-Deloughry</a>
-    <a class="hidden u-url" href="acct:matt@deloughry.co.uk"></a>
-    <Image src={MeImage} class="u-photo w-4/12 aspect-square hidden md:block rounded-lg shadow-lg" />
-    <h1 class="flex-1 text-2xl sm:text-4xl self-center">
-        <span class="text-link">Developer.</span><br>
-        <span class="text-twitch">Streamer.</span><br>
-        <span class="text-twitter line-through">Tweeter.</span><span class="text-mastodon">Tooter.</span><br>
-        &amp; a little bit of everything <span class="dark:text-accent-2 text-accent">Nerdy!</span><span class="font-bold">_</span>
-    </h1>
-  </section>
+	<section class="h-card mt-8 flex gap-6">
+		<a class="u-url hidden" rel="me" href="https://deloughry.co.uk/">Matthew Peck-Deloughry</a>
+		<a class="u-url hidden" href="acct:matt@deloughry.co.uk"></a>
+		<Image
+			src={MeImage}
+			class="u-photo w-4/12 aspect-square hidden md:block rounded-lg shadow-lg"
+		/>
+		<h1 class="flex-1 self-center text-2xl sm:text-4xl">
+			<span class="text-link">Developer.</span><br />
+			<span class="text-twitch">Streamer.</span><br />
+			<span class="text-twitter line-through">Tweeter.</span><span class="text-mastodon"
+				>Tooter.</span
+			><br />
+			&amp; a little bit of everything <span class="text-accent dark:text-accent-2">Nerdy!</span
+			><span class="font-bold">_</span>
+		</h1>
+	</section>
 	<section class="mt-16">
-		<h2 class="title mb-6">Av' fun developing, Av' fun learning, then Av'a crack at engineering it!</h2>
-		<p class="mb-4 p-note">
-      Aye up, I'm Matt (aka Dr_DinoMight 🦖🧨), a developer of something around 15 years (I think!? They all blend into one and other now 😖).<br><br>
-      I'm a developer for the brilliant HMA Digital here in South Yorkshire, UK.<br><br>
-      💬 I'm a Full Stack Developer who loves to tinker with anything and everything, I love to build, be it personal 1 person projects or large scale community projects, as long as it's code it floats my boat!<br><br>
+		<h2 class="title mb-6">
+			Av' fun developing, Av' fun learning, then Av'a crack at engineering it!
+		</h2>
+		<p class="p-note mb-4">
+			Aye up, I'm Matt (aka Dr_DinoMight 🦖🧨), a developer of something around 15 years (I think!?
+			They all blend into one and other now 😖).<br /><br />
+			I'm a developer for the brilliant HMA Digital here in South Yorkshire, UK.<br /><br />
+			💬 I'm a Full Stack Developer who loves to tinker with anything and everything, I love to build,
+			be it personal 1 person projects or large scale community projects, as long as it's code it floats
+			my boat!<br /><br />
 		</p>
 		<SocialList />
 	</section>

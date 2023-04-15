@@ -1,8 +1,5 @@
 {
 	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
-	},
 	"stylelint.validate": ["css", "less", "postcss", "astro"],
 	"stylelint.snippet": ["css", "less", "postcss", "astro"],
 	"[markdown]": {

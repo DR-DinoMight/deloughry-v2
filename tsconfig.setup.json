@@ -1,33 +1,24 @@
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "target": "es5",
-    "module": "esnext",
-    "jsx": "preserve",
-    "strict": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "noEmit": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "incremental": true,
-    "types": ["node", "vite/client", "@types/spotify-api"]
-  },
-  "ts-node": { "esm": true, "experimentalSpecifierResolution": "node" },
-  "exclude": [
-    "node_modules",
-    "**/node_modules/*",
-    ".vscode",
-    "dist"
-  ],
-  "include": [
-    ".env",
-    "**/*.ts",
-    "astro.config.ts"
-  ],
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"target": "es5",
+		"module": "esnext",
+		"jsx": "preserve",
+		"strict": false,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"noEmit": true,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"incremental": true,
+		"types": ["node", "vite/client", "@types/spotify-api"]
+	},
+	"ts-node": { "esm": true, "experimentalSpecifierResolution": "node" },
+	"exclude": ["node_modules", "**/node_modules/*", ".vscode", "dist"],
+	"include": [".env", "**/*.ts", "astro.config.ts"]
 }

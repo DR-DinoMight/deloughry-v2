@@ -18,6 +18,10 @@ module.exports = {
 		fontVariantNumeric: false,
 	},
 	theme: {
+		listStyleType: {
+			decimal: "decimal",
+			disc: "disc",
+		},
 		extend: {
 			colors: {
 				bgColor: "var(--theme-bg)",
