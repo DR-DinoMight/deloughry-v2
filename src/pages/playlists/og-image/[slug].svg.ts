@@ -67,7 +67,7 @@ export async function get({ params: { slug } }: APIContext) {
 
 	const playlist = await getPlaylistfromDB(slug);
 	const title = playlist?.name ?? siteConfig.title;
-	const svg = await satori(markup(title, playlist?.tracks?.length ?? 0, playlist?.artwork), ogOptions);
+	const svg = await satori(markup(title, playlist?.tracks?.length+1 ?? 0, playlist?.artwork), ogOptions);
 	return {
 		body: svg,
 		encoding: "binary",
