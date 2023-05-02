@@ -40,6 +40,7 @@ const { playlist, tracks } = Astro.props;
 const meta = {
 	title: playlist.name,
   description: `Playlist of liked songs for the month ${playlist.name}`,
+  ogImage: `/playlists/og-image/${playlist.id}.svg`
 };
 
 export const prerender = true;

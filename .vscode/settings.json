@@ -15,5 +15,6 @@
 		"astro", // Enable .astro
 		"typescript", // Enable .ts
 		"typescriptreact"
-	]
+	],
+	"vue.features.codeActions.enable": false
 }
