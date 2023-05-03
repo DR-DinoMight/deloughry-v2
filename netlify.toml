@@ -5,3 +5,5 @@
   from = "/.well-known/webfinger"
   to = "https://phpc.social/.well-known/webfinger?resource=acct:DrDinoMight@phpc.social"
   status = 200
+[functions]
+  external_node_modules = ['@resvg/resvg-js']
