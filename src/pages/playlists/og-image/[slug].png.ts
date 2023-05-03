@@ -4,6 +4,7 @@ import { html } from "satori-html";
 import siteConfig from "@/site-config";
 import { getFormattedDate } from "@/utils";
 import { getPlaylistfromDB, getPlaylistsfromDB } from "@/data/models/playlist";
+import { Resvg } from "@resvg/resvg-js";
 export const prerender = true;
 const monoFontReg = await fetch(
 	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-400-normal.ttf"
@@ -68,8 +69,9 @@ export async function get({ params: { slug } }: APIContext) {
 	const playlist = await getPlaylistfromDB(slug);
 	const title = playlist?.name ?? siteConfig.title;
 	const svg = await satori(markup(title, playlist?.tracks?.length+1 ?? 0, playlist?.artwork), ogOptions);
+  const png = new Resvg(svg).render().asPng();
 	return {
-		body: svg,
+		body: png,
 		encoding: "binary",
 	};
 }
