@@ -5,6 +5,8 @@ import siteConfig from "@/site-config";
 import { getFormattedDate } from "@/utils";
 import { getPlaylistfromDB, getPlaylistsfromDB } from "@/data/models/playlist";
 import { Resvg } from "@resvg/resvg-js";
+import { JSDOM } from 'jsdom';
+
 export const prerender = true;
 const monoFontReg = await fetch(
 	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-400-normal.ttf"
@@ -35,14 +37,15 @@ const ogOptions: SatoriOptions = {
 	],
 };
 
-const markup = (title: string, tracks: number, artwork: string) => html`<div
+const markup = (title: string, description: string, artwork: string) => html`<div
 	tw="flex flex-col w-full h-full bg-[#191919] text-[#e5e7eb]"
+  style="background-image: url('${artwork}') opacity: 0.3; background-size: cover; background-position: center; backdrop-filter: blur(10px);)"
 >
-	<div tw="flex items-center justify-between w-full p-10 gap-2 flex-grow">
-		<img src="${artwork}" height="200px" width="200px" />
-		<div tw="flex flex-col	px-4 w-full">
-			<h1 tw="text-5xl font-bold leading-snug text-white flex-wrap w-2/3" >${title.replaceAll("&", "and")}</h1>
-			<p tw="ml-3 text-xl font-semibold text-[#00f701]">Tracks: ${tracks}</p>
+	<div tw="flex items-center justify-between w-full p-10 flex-grow">
+		<img src="${artwork}" height="300px" width="300px" tw="rounded-xl" />
+		<div tw="flex flex-col pl-8 w-full">
+			<h1 tw="text-6xl font-bold leading-snug text-white flex-wrap w-2/3" >${title.replaceAll("&", "and")}</h1>
+			<p tw="ml-3 text-xl font-semibold text-[#00f701]">${description}</p>
 		</div>
 	</div>
 	<div tw="flex items-center justify-between w-full p-10 border-t border-[#00f701] text-xl">
@@ -68,7 +71,8 @@ export async function get({ params: { slug } }: APIContext) {
 
 	const playlist = await getPlaylistfromDB(slug);
 	const title = playlist?.name ?? siteConfig.title;
-	const svg = await satori(markup(title, playlist?.tracks?.length+1 ?? 0, playlist?.artwork), ogOptions);
+  console.log(markup(parseString(title), parseString(playlist?.description), playlist?.artwork));
+	const svg = await satori(markup(parseString(title), parseString(playlist?.description), playlist?.artwork), ogOptions);
   const png = new Resvg(svg).render().asPng();
 	return {
 		body: png,
@@ -76,8 +80,15 @@ export async function get({ params: { slug } }: APIContext) {
 	};
 }
 
+function parseString(text: string): string {
+  const { window } = new JSDOM(`<!doctype html><body>${text}</body></html>`);
+  return window.document.body.textContent || '';
+}
+
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
 	const playlists = await getPlaylistsfromDB();
 	const data = playlists.map(({ id }) => ({ params: { slug: id } }));
 	return data;
 }
+
+
