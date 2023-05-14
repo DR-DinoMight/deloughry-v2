@@ -23,6 +23,9 @@ module.exports = {
 			disc: "disc",
 		},
 		extend: {
+      fontSize: {
+        '20xl': '8rem',
+      },
 			colors: {
 				bgColor: "var(--theme-bg)",
 				textColor: "var(--theme-text)",

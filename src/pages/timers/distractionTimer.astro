@@ -1,0 +1,27 @@
+---
+import PageLayout from "@/layouts/Base";
+import { DistractionTimer } from "src/components/DistractionTimer";
+
+const meta = {
+	title: "Timer To Distraction",
+	description: "",
+};
+
+export const prerender = false;
+---
+
+<PageLayout meta={meta}>
+	<div class="space-y-6">
+		<h1 class="title">Distraction Timer</h1>
+		<div class="my-4 rounded-md p-4">
+			<h2 class="mb-2 text-xl font-bold">Distraction Timer Instructions:</h2>
+			<ul class="list-inside list-disc">
+				<li>Start the timer by clicking the "Start" button.</li>
+				<li>Focus on your task and avoid interacting with the site or switching tabs.</li>
+				<li>The timer will stop if you interact with the site or switch tabs.</li>
+				<li>Try to beat your previous high score by staying focused for a longer time.</li>
+			</ul>
+		</div>
+		<DistractionTimer client:visible={true} />
+	</div>
+</PageLayout>

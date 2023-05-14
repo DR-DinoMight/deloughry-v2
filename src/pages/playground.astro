@@ -1,6 +1,5 @@
 ---
 import PageLayout from "@/layouts/Base";
-import NowPlaying from "src/components/NowPlaying.jsx";
 
 const meta = {
 	title: "Playground",
@@ -13,9 +12,22 @@ export const prerender = true;
 	<div class="space-y-6">
 		<h1 class="title">Playground</h1>
 
+		<h2>Fun Tools</h2>
+		<ul class="list-inside list-disc">
+			<li class="list-item">
+				<a href="/timers/pomodoro" class="cactus-link mx-4 my-4 sm:py-0">Pomodoro Timer</a>
+			</li>
+			<li class="list-item">
+				<a href="/timers/distractionTimer" class="cactus-link mx-4 my-4 sm:py-0"
+					>Distraction Timer</a
+				>
+			</li>
+		</ul>
 		<h2>Work in Progress</h2>
-    <ul class="list-disc list-inside">
-      <li class="list-item"><a href="/playlists" class="my-4 mx-4 cactus-link  sm:py-0 ">Spotify Jams Playlists</a></li>
-    </ul>
+		<ul class="list-inside list-disc">
+			<li class="list-item">
+				<a href="/playlists" class="cactus-link mx-4 my-4 sm:py-0">Spotify Jams Playlists</a>
+			</li>
+		</ul>
 	</div>
 </PageLayout>
