@@ -1,0 +1,19 @@
+---
+import PageLayout from "@/layouts/Base";
+import PomodoroTimer from "src/components/PomodoroTimer";
+
+const meta = {
+	title: "Pomodoro",
+	description: "",
+};
+
+export const prerender = false;
+---
+
+<PageLayout meta={meta}>
+	<div class="space-y-6">
+		<h1 class="title">Pomodoro Timer</h1>
+
+		<PomodoroTimer client:visible={true} />
+	</div>
+</PageLayout>
