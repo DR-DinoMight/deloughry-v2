@@ -28,6 +28,17 @@ const PomodoroTimer = () => {
     longBreak: 0,
   });
 
+  const showNotification = () => {
+    if (!("Notification" in window)) {
+      console.error("This browser does not support desktop notifications");
+    } else if (Notification.permission === "granted") {
+      new Notification(`Pomodoro Timer - ${mode}`, {
+        body: `${mode} Timer is complete!`,
+        icon: '/512x512.png'
+      });
+    };
+  };
+
   const toggleSound = () => {
     setIsSoundOn(!isSoundOn);
   };
@@ -61,9 +72,22 @@ const PomodoroTimer = () => {
     }
   };
 
+  const requestNotificationPermission = () => {
+    if (!("Notification" in window)) {
+      console.error("This browser does not support desktop notifications");
+    } else if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+  };
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
+
   useEffect(() => {
     if (remainingTime <= 0) {
       playAudio();
+      showNotification();
       stopTimer();
 
       if (mode === 'pomodoro') {
