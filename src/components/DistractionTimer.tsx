@@ -58,4 +58,5 @@ export const DistractionTimer: React.FC = () => {
       </button>
     </div>
   );
+
 };

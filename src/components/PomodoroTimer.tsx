@@ -50,14 +50,20 @@ const PomodoroTimer = () => {
     setIsRunning(false);
   };
 
+  const playAudio = () => {
+    const audioEl = document.getElementById("timer-sound") as HTMLAudioElement;
+    audioEl.play();
+  };
+
   useEffect(() => {
     if (remainingTime <= 0) {
+      playAudio();
       stopTimer();
 
       if (mode === 'pomodoro') {
         timerData.pomodoro += 1;
         setSessions((prevSessions) => prevSessions + 1);
-        if (sessions % timerConfig.longBreakInterval === 0) {
+        if (sessions % timerConfig.longBreakInterval === 0 && sessions > 1) {
           switchMode('longBreak');
         } else {
           switchMode('shortBreak');
@@ -74,6 +80,9 @@ const PomodoroTimer = () => {
 
   return (
     <div className="container mx-auto align-middle justify-center flex flex-col">
+      <audio id="timer-sound">
+        <source src="https://onlineclock.net/audio/options/default.mp3"></source>
+      </audio>
       {/* Timer display */}
       <div className={`text-20xl text-center ${mode === 'pomodoro'
         ? 'text-red-500 animate-pulse'
