@@ -20,6 +20,7 @@ const PomodoroTimer = () => {
   const [remainingTime, setRemainingTime] = useState(timerConfig.pomodoro * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [isSoundOn, setIsSoundOn] = useState(true);
 
   const [timerData, setTimerData] = useState<TimerData>({
     pomodoro: 0,
@@ -27,6 +28,9 @@ const PomodoroTimer = () => {
     longBreak: 0,
   });
 
+  const toggleSound = () => {
+    setIsSoundOn(!isSoundOn);
+  };
 
   const switchMode = (newMode: 'pomodoro' | 'shortBreak' | 'longBreak') => {
     setMode(newMode);
@@ -51,8 +55,10 @@ const PomodoroTimer = () => {
   };
 
   const playAudio = () => {
-    const audioEl = document.getElementById("timer-sound") as HTMLAudioElement;
-    audioEl.play();
+    if (isSoundOn) {
+      const audioEl = document.getElementById("timer-sound") as HTMLAudioElement;
+      audioEl.play();
+    }
   };
 
   useEffect(() => {
@@ -107,6 +113,13 @@ const PomodoroTimer = () => {
       {/* Start/Stop button */}
       <button className={`flex items-center justify-center rounded-lg  bg-zinc-200 p-2 ring-zinc-400 transition-all hover:ring-2 dark:bg-zinc-700  ${isRunning ? 'bg-opacity-50' : ''}`} onClick={isRunning ? stopTimer : startTimer}>
         {isRunning ? 'Stop' : 'Start'}
+      </button>
+
+      <button
+        className="flex items-center justify-center rounded-lg bg-gray-300 ring-gray-400 px-4 py-2 text-gray-800 transition-all hover:ring-2"
+        onClick={toggleSound}
+      >
+        {isSoundOn ? "Sound On" : "Sound Off"}
       </button>
 
       <div className="mt-4 flex flex-col text-center justify-center">
