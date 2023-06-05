@@ -37,7 +37,7 @@ const ogOptions: SatoriOptions = {
 	],
 };
 
-const markup = (title: string, description: string, artwork: string) => html`<div
+const markup = (title: string, description: string, artwork?: string) => html`<div
 	tw="flex flex-col w-full h-full bg-[#191919] text-[#e5e7eb]"
   style="background-image: url('${artwork}') opacity: 0.3; background-size: cover; background-position: center; backdrop-filter: blur(10px);)"
 >
@@ -71,8 +71,9 @@ export async function get({ params: { slug } }: APIContext) {
 
 	const playlist = await getPlaylistfromDB(slug);
 	const title = playlist?.name ?? siteConfig.title;
-  console.log(markup(parseString(title), parseString(playlist?.description), playlist?.artwork));
-	const svg = await satori(markup(parseString(title), parseString(playlist?.description), playlist?.artwork), ogOptions);
+  const artwork = (playlist?.artwork && playlist?.artwork.length > 0) ? playlist?.artwork : 'https://res.cloudinary.com/dr-dinomight/image/upload/v1676719004/192x192_hdl78r.png';
+  console.log("ARTIST",artwork);
+	const svg = await satori(markup(parseString(title), parseString(playlist?.description), artwork), ogOptions);
   const png = new Resvg(svg).render().asPng();
 	return {
 		body: png,
