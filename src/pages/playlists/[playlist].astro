@@ -1,70 +1,63 @@
 ---
 import PageLayout from "@/layouts/Base";
 import type { GetStaticPathsResult } from "astro";
-import { useTigrisCollection } from "@tigrisdata/astro";
-import type { Playlists } from "@/data/models/playlist";
-import type { Track } from "@/data/models/tracks";
 import ImageWithBadge from "src/components/ImageWithBadge";
-import type { SearchQuery, SearchIterator } from "@tigrisdata/core";
 import Tracks from "src/components/Tracks";
+import type { PlaylistWithAllRelationships, TrackWithAllRelationships } from "@/lib/types/spotify";
+import { getPlaylistsfromDB } from "@/data/models/playlist";
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-	const params = [];
-	const playlistCollection = await useTigrisCollection<Playlists>("playlists");
-	const playlistsCursor = playlistCollection.findMany({});
-	const playlists = await playlistsCursor.toArray();
+  const params = [];
+  const playlists = await getPlaylistsfromDB();
 
-	for await (const playlist of playlists) {
-		const trackCollection = await useTigrisCollection<Track>("tracks");
-		const query: SearchQuery<Track> = {
-			filter: { playlists: playlist.id },
-			hitsPerPage: 250,
-		};
+  for await (const playlist of playlists) {
+    params.push({
+      params: { playlist: playlist.id },
+      props: { playlist, tracks: playlist.tracks },
+    });
+  }
 
-		const resultIterable: SearchIterator<Track> = await trackCollection.search(query);
-		const tracks = [];
-		for await (const result of resultIterable) {
-			tracks.push(...result.hits.map((h) => h.document));
-		}
-		params.push({
-			params: { playlist: playlist.id },
-			props: { playlist, tracks },
-		});
-	}
-
-	return params;
+  return params;
 }
 
-const { playlist, tracks } = Astro.props;
+const { playlist, tracks } = Astro.props as {
+  playlist: PlaylistWithAllRelationships;
+  tracks: TrackWithAllRelationships[];
+};
+
 const meta = {
-	title: playlist.name,
-	description: `Playlist of liked songs for the month ${playlist.name}`,
-	ogImage: `/playlists/og-image/${playlist.id}.png`,
+  title: playlist.name,
+  description: `Playlist of liked songs for the month ${playlist.name}`,
+  ogImage: `/playlists/og-image/${playlist.id}.png`,
 };
 
 export const prerender = true;
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-6">{playlist.name}</h1>
-	<a href="/playlists" class="cactus-link mb-4">&lt; Back</a>
-	<div class="mt-6 flex flex-col gap-4 sm:flex-row">
-		<div class="w-full sm:w-1/4">
-			<a href={playlist.externalUrl} class="cactus-link" target="_blank">
-				<ImageWithBadge client:load imageUrl={playlist.artwork} underText="Play on Spotify" />
-			</a>
-		</div>
-		<div class="flex-1">
-			<h2 class="my-4 flex justify-between sm:justify-start sm:gap-4">
-				<span>Tracks</span><span class="text-accent">({tracks.length ?? 0})</span>
-			</h2>
-			{
-				tracks && (
-					<>
-						<Tracks client:load tracks={tracks} />
-					</>
-				)
-			}
-		</div>
-	</div>
+  <h1 class="title mb-6">{playlist.name}</h1>
+  <a href="/playlists" class="cactus-link mb-4">&lt; Back</a>
+  <div class="mt-6 flex flex-col gap-4 sm:flex-row">
+    <div class="w-full sm:w-1/4">
+      <a href={playlist.externalUrl} class="cactus-link" target="_blank">
+        <ImageWithBadge
+          client:load
+          imageUrl={playlist.artwork[0]?.url ?? ""}
+          underText="Play on Spotify"
+        />
+      </a>
+    </div>
+    <div class="flex-1">
+      <h2 class="my-4 flex justify-between sm:justify-start sm:gap-4">
+        <span>Tracks</span><span class="text-accent">({tracks.length ?? 0})</span>
+      </h2>
+      {
+        tracks && (
+          <>
+            <Tracks client:load tracks={tracks} />
+          </>
+        )
+      }
+    </div>
+  </div>
 </PageLayout>
