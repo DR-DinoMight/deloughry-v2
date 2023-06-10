@@ -8,7 +8,7 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"sync": "astro sync",
-		"build": "astro build",
+		"build": "prisma generate && astro build",
 		"preview": "astro preview",
 		"format": "prettier -w ./src ./src/**/*.astro"
 	},
