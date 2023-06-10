@@ -1,168 +1,209 @@
-import {
-	Field,
-	LogicalOperator,
-	PrimaryKey,
-	SearchField,
-	SelectorFilterOperator,
-	Session,
-	Tigris,
-	TigrisCollection,
-	TigrisDataTypes,
-	TigrisSearchIndex,
-} from "@tigrisdata/core";
-import { Artist, PlaylistTrack, Track, getManyChunked, upsertTrack } from "./tracks";
-import { getAllPlaylists } from "../../lib/spotify";
-import tigrisDB, { tigrisClient } from "../../lib/tigris";
+import { PrismaClient } from "@prisma/client";
+import * as crypto from 'crypto';
+import { makeDateFromPlaylistName } from "src/utils/date";
 
-export class TrackId {
-	@Field(TigrisDataTypes.STRING)
-	id!: string;
+const prisma = new PrismaClient();
+
+export const getPlaylistsfromDB = async (name?: string, exact?: boolean) => {
+
+  let whereClause;
+
+  if (name) {
+    whereClause = exact
+      ? { name: { equals: name } }
+      : { name: { contains: name } };
+  }
+
+  if (name && whereClause) {
+    return await prisma.playlist.findMany({
+      where: whereClause,
+      include: {
+        artwork: true,
+
+        tracks: {
+          include: {
+            artists: true,
+            artwork: true
+          }
+        }
+      },
+      orderBy: {
+        addedAt: "desc"
+      }
+    })
+  } else {
+    return await prisma.playlist.findMany({
+      include: {
+        artwork: true,
+
+        tracks: {
+          include: {
+            artists: true,
+            artwork: true
+          }
+        }
+      },
+      orderBy: {
+        addedAt: "desc"
+      }
+    })
+  }
+};
+
+export const getPlaylistfromDB = async (id: string) => {
+  return await prisma.playlist.findUnique({
+    include: {
+      artwork: true,
+      tracks: {
+        include: {
+          artists: true,
+          artwork: true
+        }
+      }
+    },
+    where: {
+      id: id
+    }
+  });
+};
+
+export async function addTracksToPlaylistDb(
+  playlist: SpotifyApi.PlaylistObjectSimplified,
+  tracks: SpotifyApi.TrackObjectFull[],
+  fromAPI = false): Promise<string | false> {
+
+  try {
+    if (!playlist) {
+      return false;
+    }
+
+    let artworks = playlist?.images.map((image) => {
+      const hash = crypto.createHash('sha256').update(image.url).digest('hex');
+      return {
+        create: {
+          //hex of the image url
+          id: hash,
+          url: image.url,
+          width: image.width ?? 64,
+          height: image.height ?? 64
+        },
+        where: {
+          id: hash
+        }
+      }
+    });
+    //unique artworks
+    artworks = [...new Map(artworks.map(item => [item.create.id, item])).values()];
+
+    //@ts-ignore
+    let tracksToAdd = tracks.map((track, index) => {
+
+      let artists = track.artists.map((artist) => {
+        return {
+          create: {
+            id: artist.id,
+            name: artist.name,
+          },
+          where: {
+            id: artist.id
+          }
+        }
+      });
+
+      //unique artworks
+      artists = [...new Map(artists.map(item => [item.create.id, item])).values()];
+
+      let trackArtworks = track.album.images.map((image) => {
+        const hash = crypto.createHash('sha256').update(image.url).digest('hex');
+        return {
+          create: {
+            id: hash,
+            url: image.url,
+            width: image.width ?? 64,
+            height: image.height ?? 64
+          },
+          where: {
+            id: hash
+          }
+        }
+      });
+
+      //unique artworks
+      trackArtworks = [...new Map(trackArtworks.map(item => [item.create.id, item])).values()];
+
+      return {
+        create: {
+          id: track.id,
+          name: track.name,
+          uri: track.uri,
+          previewUrl: track.preview_url,
+          externalUrl: track.external_urls["spotify"] ?? '',
+          artists: {
+            connectOrCreate: artists
+          },
+          artwork: {
+            connectOrCreate: trackArtworks
+          },
+        },
+        where: {
+          id: track.id
+        }
+      }
+    });
+    //unique artworks
+    tracksToAdd = [...new Map(tracksToAdd.map(item => [item.create.id, item])).values()];
+
+    const playlistData = {
+      id: playlist.id,
+      name: playlist.name,
+      description: playlist.description ?? '',
+      spotifyUri: playlist.uri,
+      externalUrl: playlist.external_urls["spotify"],
+      addedAt: makeDateFromPlaylistName(playlist.name, isMonthlyLikedPlaylist(playlist.name)),
+      artwork: {
+        connectOrCreate: artworks,
+      },
+      tracks: {
+        connectOrCreate: tracksToAdd,
+      }
+    };
+
+    const dbPlaylist = await prisma.playlist.upsert({
+      where: {
+        id: playlist.id
+      },
+      include: {
+
+        tracks: {
+          include: {
+            artists: true,
+            artwork: true
+          }
+        },
+        artwork: true
+      },
+      //@ts-ignore
+      update: {
+        ...playlistData
+      },
+      //@ts-ignore
+      create: {
+        ...playlistData
+      }
+    });
+    console.log('added');
+    // tx.commit();
+    prisma.$disconnect();
+    return playlist.id;
+  }
+  catch (e) {
+    prisma.$disconnect();
+    console.log(e);
+    return false;
+  }
 }
 
-@TigrisCollection("playlists")
-@TigrisSearchIndex("playlists")
-export class Playlists {
-	@PrimaryKey(TigrisDataTypes.STRING, { order: 1 })
-	id!: string;
-
-	@SearchField(TigrisDataTypes.STRING)
-	@Field(TigrisDataTypes.STRING)
-	name: string;
-
-	@Field(TigrisDataTypes.STRING)
-	description: string;
-
-	@Field(TigrisDataTypes.STRING)
-	artwork: string;
-
-	@Field(TigrisDataTypes.STRING)
-	spotifyUri: string;
-
-	@Field(TigrisDataTypes.STRING)
-	externalUrl: string;
-
-	@Field(TigrisDataTypes.ARRAY, { elements: TrackId })
-	tracks?: Array<TrackId>;
-
-	@Field(TigrisDataTypes.DATE_TIME, { timestamp: "createdAt" })
-	createdAt?: Date;
-
-	@Field(TigrisDataTypes.DATE_TIME, { timestamp: "updatedAt" })
-	updatedAt?: Date;
-}
-
-export const tracksForPlaylistDB = async (playlistId: string) => {
-	const dbTracks = tigrisDB.getCollection<Track>("tracks");
-
-	const tracks = dbTracks.findMany({
-		filter: {
-			playlists: {
-				$elemMatch: {
-					id: playlistId,
-				},
-			},
-		},
-	});
-	const foundTracks: Array<Tracks> = [];
-
-	for await (var t of tracks) {
-		foundTracks.push(t);
-	}
-
-	return foundTracks;
-};
-
-export const getPlaylistsfromDB = async (name: string = "", exact: boolean = false) => {
-	const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
-
-	const playlistsHits = new Array<Playlists>();
-
-	const search = exact ? `"${name}"` : name;
-
-	const playlists = dbPlaylists.search({
-		q: search,
-		searchFields: ["name"],
-		// sort: [
-		// 	{
-		// 		field: "name",
-		// 		order: "$desc",
-		// 	},
-		// ],
-	});
-
-	for await (const result of playlists) {
-		result.hits.forEach((hit) => playlistsHits.push(hit.document));
-	}
-	return playlistsHits;
-};
-
-export const getPlaylistfromDB = async (id: string, tx?: Session) => {
-	const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
-	const query = { filter: { id } };
-
-	if (tx) {
-		return await dbPlaylists.findOne(query, tx);
-	}
-	return await dbPlaylists.findOne(query);
-};
-
-export async function addTracksToPlaylistDb(id: string, tracks: any[], fromAPI = false) {
-	const dbPlaylists = tigrisDB.getCollection<Playlists>("playlists");
-	const playlists = await getAllPlaylists();
-	const playlist = playlists.find((x) => x.id === id);
-
-	if (playlist) {
-		// const tx = await tigrisDB.beginTransaction();
-		// insert or update the track to the db
-
-		if (!(await getPlaylistfromDB(id))) {
-			await dbPlaylists.insertOrReplaceOne(
-				{
-					id: playlist.id,
-					name: playlist.name,
-					description: playlist.description,
-					artwork: playlist?.images[0]?.url ?? "",
-					spotifyUri: playlist.uri,
-					externalUrl: playlist.external_urls["spotify"],
-					updatedAt: new Date(),
-				}
-				// tx
-			);
-		} else {
-			dbPlaylists.updateOne({
-				filter: { id: playlist.id },
-				fields: {
-					id: playlist.id,
-					name: playlist.name,
-					description: playlist.description,
-					artwork: playlist?.images[0]?.url ?? "",
-					spotifyUri: playlist.uri,
-					externalUrl: playlist.external_urls["spotify"],
-				},
-			});
-		}
-
-		let tracksInDB: Track[] = [];
-		if (tracks.length > 0) {
-			for await (const track of tracks) {
-				tracksInDB.push(await upsertTrack(track, playlist.id));
-			}
-
-			console.log("Inserting or updating tracks : " + tracksInDB.length + "/" + tracks.length);
-
-			if (fromAPI) {
-				console.log("building");
-				fetch(
-					`${import.meta.env.BUILD_HOOK}?trigger_title=New+Song+or+playlist+Added&clear_cache=true`,
-					{
-						method: "POST",
-					}
-				);
-			}
-		}
-
-		// tx.commit();
-
-		return playlist.id;
-	}
+function isMonthlyLikedPlaylist(playlistName: string) {
+  const pattern = /^(January|February|March|April|May|June|July|August|September|October|November|December) '\d{2}$/;
+  return pattern.test(playlistName);
 }

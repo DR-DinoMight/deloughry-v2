@@ -4,7 +4,6 @@ import tailwind from "@astrojs/tailwind";
 import image from "@astrojs/image";
 import sitemap from "@astrojs/sitemap";
 import prefetch from "@astrojs/prefetch";
-import tigris from "@tigrisdata/astro";
 
 // https://astro.build/config
 import react from "@astrojs/react";
@@ -35,12 +34,6 @@ export default defineConfig({
 		sitemap(),
 		prefetch(),
 		react(),
-		tigris({
-			branch: import.meta.env.TIGRIS_DB_BRANCH,
-			projectName: import.meta.env.TIGRIS_PROJECT,
-			clientId: import.meta.env.TIGRIS_CLIENT_ID,
-			clientSecret: import.meta.env.TIGRIS_CLIENT_SECRET,
-		}),
 	],
 	vite: {
 		optimizeDeps: {

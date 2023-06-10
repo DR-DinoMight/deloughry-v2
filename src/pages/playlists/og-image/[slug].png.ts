@@ -9,32 +9,32 @@ import { JSDOM } from 'jsdom';
 
 export const prerender = true;
 const monoFontReg = await fetch(
-	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-400-normal.ttf"
+  "https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-400-normal.ttf"
 );
 
 const monoFontBold = await fetch(
-	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-800-normal.ttf"
+  "https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-800-normal.ttf"
 );
 
 const ogOptions: SatoriOptions = {
-	width: 1200,
-	height: 630,
-	// debug: true,
-	embedFont: true,
-	fonts: [
-		{
-			name: "JetBrains Mono",
-			data: await monoFontReg.arrayBuffer(),
-			weight: 400,
-			style: "normal",
-		},
-		{
-			name: "JetBrains Mono",
-			data: await monoFontBold.arrayBuffer(),
-			weight: 700,
-			style: "normal",
-		},
-	],
+  width: 1200,
+  height: 630,
+  // debug: true,
+  embedFont: true,
+  fonts: [
+    {
+      name: "JetBrains Mono",
+      data: await monoFontReg.arrayBuffer(),
+      weight: 400,
+      style: "normal",
+    },
+    {
+      name: "JetBrains Mono",
+      data: await monoFontBold.arrayBuffer(),
+      weight: 700,
+      style: "normal",
+    },
+  ],
 };
 
 const markup = (title: string, description: string, artwork?: string) => html`<div
@@ -62,23 +62,23 @@ const markup = (title: string, description: string, artwork?: string) => html`<d
 </div>`;
 
 export async function get({ params: { slug } }: APIContext) {
-	//check if slug is string if not bail
-	if (typeof slug !== "string") {
-		return {
-			status: 404,
-		};
-	}
+  //check if slug is string if not bail
+  if (typeof slug !== "string") {
+    return {
+      status: 404,
+    };
+  }
 
-	const playlist = await getPlaylistfromDB(slug);
-	const title = playlist?.name ?? siteConfig.title;
-  const artwork = (playlist?.artwork && playlist?.artwork.length > 0) ? playlist?.artwork : 'https://res.cloudinary.com/dr-dinomight/image/upload/v1676719004/192x192_hdl78r.png';
-  console.log("ARTIST",artwork);
-	const svg = await satori(markup(parseString(title), parseString(playlist?.description), artwork), ogOptions);
+  const playlist = await getPlaylistfromDB(slug);
+  const title = playlist?.name ?? siteConfig.title;
+  const artwork = (playlist?.artwork[0]?.url && playlist?.artwork[0]?.url.length > 0) ? playlist?.artwork[0]?.url : 'https://res.cloudinary.com/dr-dinomight/image/upload/v1676719004/192x192_hdl78r.png';
+  //@ts-expect-error
+  const svg = await satori(markup(parseString(title), parseString(playlist?.description), artwork), ogOptions);
   const png = new Resvg(svg).render().asPng();
-	return {
-		body: png,
-		encoding: "binary",
-	};
+  return {
+    body: png,
+    encoding: "binary",
+  };
 }
 
 function parseString(text: string): string {
@@ -87,9 +87,9 @@ function parseString(text: string): string {
 }
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-	const playlists = await getPlaylistsfromDB();
-	const data = playlists.map(({ id }) => ({ params: { slug: id } }));
-	return data;
+  const playlists = await getPlaylistsfromDB();
+  const data = playlists.map(({ id }) => ({ params: { slug: id } }));
+  return data;
 }
 
 
