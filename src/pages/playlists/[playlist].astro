@@ -5,6 +5,7 @@ import ImageWithBadge from "src/components/ImageWithBadge";
 import Tracks from "src/components/Tracks";
 import type { PlaylistWithAllRelationships, TrackWithAllRelationships } from "@/lib/types/spotify";
 import { getPlaylistsfromDB } from "@/data/models/playlist";
+import type { Artwork } from "@prisma/client";
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
   const params = [];
@@ -42,7 +43,7 @@ export const prerender = true;
       <a href={playlist.externalUrl} class="cactus-link" target="_blank">
         <ImageWithBadge
           client:load
-          imageUrl={playlist.artwork[0]?.url ?? ""}
+          imageUrl={playlist.artwork.find((item: Artwork) => item.height == 300)?.url ?? ""}
           underText="Play on Spotify"
         />
       </a>
