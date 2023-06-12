@@ -3,6 +3,7 @@ import PageLayout from "@/layouts/Base";
 import { getYearSoFarPlaylistsFromDB, getPastJamsPlaylistsFromDB } from "../../lib/spotify";
 import ImageWithBadge from "src/components/ImageWithBadge";
 import type { PlaylistWithAllRelationships } from "@/lib/types/spotify";
+import type { Artwork } from "@prisma/client";
 
 const playlists: PlaylistWithAllRelationships[] = await getYearSoFarPlaylistsFromDB();
 const pastPlaylists: PlaylistWithAllRelationships[] = await getPastJamsPlaylistsFromDB();
@@ -23,7 +24,7 @@ export const prerender = true;
             <a href={`/playlists/${playlist.id}`} class="cactus-link">
               <ImageWithBadge
                 client:load
-                imageUrl={playlist.artwork[0]?.url ?? ""}
+                imageUrl={playlist.artwork.find((item: Artwork) => item.height == 300)?.url ?? ""}
                 underText={playlist.name}
               />
             </a>
