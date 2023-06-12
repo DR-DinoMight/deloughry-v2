@@ -4,7 +4,7 @@
 	"private": false,
 	"type": "module",
 	"scripts": {
-		"setup": "npx vite-node --config setup.vite.config.js setup.ts",
+		"setup": "npx vite-node --config setup.vite.config.ts setup.ts",
 		"dev": "astro dev",
 		"start": "astro dev",
 		"sync": "astro sync",
@@ -62,6 +62,7 @@
 		"dotenv": "^16.0.3",
 		"emoji-unicode-map": "^1.1.11",
 		"jsdom": "^22.0.0",
+		"jsonwebtoken": "^9.0.0",
 		"node-fetch": "^3.3.1",
 		"prisma": "^4.15.0",
 		"react": "^18.2.0",
