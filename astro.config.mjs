@@ -5,6 +5,7 @@ import image from "@astrojs/image";
 import sitemap from "@astrojs/sitemap";
 import prefetch from "@astrojs/prefetch";
 
+
 import react from "@astrojs/react";
 
 // https://astro.build/config
@@ -33,10 +34,7 @@ export default defineConfig({
   sitemap(),
   prefetch(),
   react(),
-  auth({
-    configFile: "auth.config.ts",
-    injectEndpoints: false
-  }),
+  auth(),
   ],
   vite: {
     optimizeDeps: {
