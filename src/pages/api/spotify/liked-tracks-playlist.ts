@@ -55,6 +55,7 @@ export const post: APIRoute = async ({ request }) => {
   let tracksToAdd = likedTracks.filter(
     (likedTrack) => !playlistTracks.some((playlistTrack) => playlistTrack.id == likedTrack.id)
   );
+  console.log("TRACKS", tracksToAdd.length);
 
   if (
     tracksToAdd.length > 0 &&
@@ -76,8 +77,9 @@ export const post: APIRoute = async ({ request }) => {
     );
   }
 
-  await addTracksToPlaylistDb(playlist, tracksToAdd, true);
-
+  if (tracksToAdd.length > 0) {
+    await addTracksToPlaylistDb(playlist, tracksToAdd, true);
+  }
   return new Response(
     JSON.stringify({
       message: "Successfully added tracks to playlist, count:" + tracksToAdd.length,
