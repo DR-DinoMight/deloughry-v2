@@ -195,16 +195,6 @@ export async function addTracksToPlaylistDb(
     // tx.commit();
     prisma.$disconnect();
 
-    if (fromAPI) {
-      console.log("building");
-      fetch(
-        `${import.meta.env.BUILD_HOOK}?trigger_title=New+Song+or+playlist+Added&clear_cache=true`,
-        {
-          method: "POST",
-        }
-      );
-    }
-
     return playlist.id;
   }
   catch (e) {
