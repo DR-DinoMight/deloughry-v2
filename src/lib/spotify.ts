@@ -30,16 +30,21 @@ export type SpotifySong = {
 
 // GET ACCESS TOKEN
 const getAccessToken = async () => {
-  const response = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basic}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: `grant_type=refresh_token&refresh_token=${refresh_token}&user-library-read&user-top-read&playlist-modify-private&playlist-modify-public`,
-  });
-  const json = await response.json();
-  return json.access_token;
+  try {
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basic}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `grant_type=refresh_token&refresh_token=${refresh_token}&user-library-read&user-top-read&playlist-modify-private&playlist-modify-public`,
+    });
+    const json = await response.json();
+    return json.access_token;
+  }
+  catch (error) {
+    console.log(error);
+  }
 };
 
 const authHeaders = async () => {

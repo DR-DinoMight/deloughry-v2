@@ -1,0 +1,23 @@
+---
+import PageLayout from "@/layouts/Base";
+import { SignIn, SignOut } from "auth-astro/components";
+
+const meta = {
+  title: "Playground",
+  description: "",
+};
+export const prerender = false;
+---
+
+<PageLayout meta={meta}>
+  <div class="space-y-6">
+    <h1 class="title">Test</h1>
+    <SignIn
+      provider="credentials"
+      class={"flex items-center justify-center rounded-lg bg-red-500 ring-red-400  px-4 py-2 text-white transition-all hover:ring-2"}
+    >
+      Sign In
+    </SignIn>
+    <SignOut />
+  </div>
+</PageLayout>
