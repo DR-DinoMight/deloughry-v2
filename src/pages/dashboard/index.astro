@@ -14,7 +14,7 @@ if (!user) {
   return Astro.redirect("/auth/login", 302);
 }
 
-export const prerender = true;
+export const prerender = false;
 ---
 
 <PageLayout meta={meta}>
