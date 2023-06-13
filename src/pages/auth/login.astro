@@ -1,0 +1,62 @@
+---
+import PageLayout from "@/layouts/Base";
+import { auth } from "@/lib/lucia.server";
+
+//@ts-ignore
+const authRequest = auth.handleRequest(Astro);
+
+// redirect to profile page if authenticated
+const { session } = await authRequest.validateUser();
+if (session) {
+  return Astro.redirect("/", 302);
+}
+
+if (Astro.request.method === "POST") {
+  // csrf check
+  const requestOrigin = Astro.request.headers.get("origin");
+  const isValidRequest = !!requestOrigin && requestOrigin === Astro.url.origin;
+  if (!isValidRequest) {
+    return new Response(null, {
+      status: 403,
+    });
+  }
+  const form = await Astro.request.formData();
+  const username = form.get("username");
+  const password = form.get("password");
+  // check for empty values
+  if (typeof username === "string" && typeof password === "string") {
+    try {
+      const key = await auth.useKey("email", username, password);
+      const session = await auth.createSession(key.userId);
+      authRequest.setSession(session);
+      return Astro.redirect("/dashboard", 302); // redirect on successful attempt
+    } catch {
+      // invalid username/password
+      console.log(username + " failed to login");
+      Astro.response.status = 400;
+    }
+  } else {
+    Astro.response.status = 400;
+  }
+}
+
+const meta = {
+  title: "Login",
+  description: "",
+};
+export const prerender = true;
+---
+
+<PageLayout meta={meta}>
+  <div class="space-y-6">
+    <h1 class="title">Sign in</h1>
+
+    <form method="post">
+      <label for="username">username</label><br />
+      <input id="username" name="username" /><br />
+      <label for="password">password</label><br />
+      <input type="password" id="password" name="password" /><br />
+      <input type="submit" value="Sign in" class="btn" />
+    </form>
+  </div>
+</PageLayout>

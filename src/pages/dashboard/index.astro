@@ -1,0 +1,28 @@
+---
+import PageLayout from "@/layouts/Base";
+import { auth } from "@/lib/lucia.server";
+
+const meta = {
+  title: "Secrets",
+  description: "",
+};
+
+const authRequest = auth.handleRequest(Astro);
+const { user } = await authRequest.validateUser();
+
+if (!user) {
+  return Astro.redirect("/auth/login", 302);
+}
+
+export const prerender = true;
+---
+
+<PageLayout meta={meta}>
+  <div class="space-y-6">
+    <h1 class="title">Secrets</h1>
+    <p class="description">Secrect page for testing</p>
+    <form action="/api/logout" method="post">
+      <input type="submit" value="Sign out" />
+    </form>
+  </div>
+</PageLayout>
