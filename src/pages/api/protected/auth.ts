@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { auth } from "@/lib/lucia.server";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
@@ -12,7 +13,8 @@ export const post: APIRoute = async ({ params, request }) => {
   const b64auth = (request.headers.get('authorization') || '').split(' ')[1] || ''
   const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':')
 
-  if (login !== process.env.USER_NAME || password !== process.env.PASSWORD) {
+  if (typeof login !== "string" || typeof password !== "string") {
+
     return new Response(
       JSON.stringify({
         error: 'Invalid credentials',
@@ -25,7 +27,14 @@ export const post: APIRoute = async ({ params, request }) => {
       }
     );
   }
-  const authToken = jwt.sign({}, JWT_SECRET, { algorithm: JWT_ALGORITHM, expiresIn: '1d' });
+
+  const user = await auth.useKey("email", login, password);
+
+
+
+  const authToken = jwt.sign({
+    userId: user.userId,
+  }, JWT_SECRET, { algorithm: JWT_ALGORITHM, expiresIn: '1d' });
 
   return new Response(
     JSON.stringify({
