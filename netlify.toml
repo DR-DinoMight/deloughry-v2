@@ -7,4 +7,4 @@
   status = 200
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ['jsdom', '@resvg/resvg-js', 'astro]
+  external_node_modules = ['jsdom', '@resvg/resvg-js', 'astro']
