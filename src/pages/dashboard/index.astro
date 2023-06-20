@@ -22,7 +22,12 @@ export const prerender = false;
     <h1 class="title">Secrets</h1>
     <p class="description">Secrect page for testing</p>
     <form action="/api/logout" method="post">
-      <input type="submit" value="Sign out" />
+      <button
+        type="submit"
+        class="flex w-full justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-semibold leading-6 text-bgColor shadow-sm hover:bg-accent-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark"
+      >
+        Sign out
+      </button>
     </form>
   </div>
 </PageLayout>
