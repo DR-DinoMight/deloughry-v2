@@ -109,7 +109,7 @@ const GameOfLife = () => {
         >
           {running ? 'Stop' : 'Start'}
         </button>
-        <button onClick={generateEmptyGrid} class="flex w-full justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-semibold leading-6 text-bgColor shadow-sm hover:bg-accent-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark">
+        <button onClick={() => generateEmptyGrid()} class="flex w-full justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-semibold leading-6 text-bgColor shadow-sm hover:bg-accent-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark">
           Clear
         </button>
         <button
