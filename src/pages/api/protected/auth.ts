@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { auth } from "@/lib/lucia.server";
+import { getToken } from "@/lib/auth";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
@@ -32,9 +33,7 @@ export const post: APIRoute = async ({ params, request }) => {
 
 
 
-  const authToken = jwt.sign({
-    userId: user.userId,
-  }, JWT_SECRET, { algorithm: JWT_ALGORITHM, expiresIn: '1d' });
+  const authToken = getToken(user.userId);
 
   return new Response(
     JSON.stringify({

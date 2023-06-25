@@ -93,3 +93,30 @@ model Artist {
 
   tracks Track[]
 }
+
+model HealthData {
+  id        String      @id @default(uuid()) @db.Uuid
+  date      DateTime    @default(now())
+  datapoint Datapoint[]
+}
+
+model Datapoint {
+  id           String         @id @default(uuid()) @db.Uuid
+  type         DatapointTypes
+  value        Float
+  unit         String
+  healthData   HealthData?    @relation(fields: [healthDataId], references: [id])
+  healthDataId String?
+
+  @@index([healthDataId])
+}
+
+enum DatapointTypes {
+  STEPS
+  DISTANCE
+  HEART_RATE
+  BLOOD_PRESSURE
+  SLEEP
+  WEIGHT
+  BODY_FAT
+}

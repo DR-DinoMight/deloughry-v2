@@ -1,7 +1,11 @@
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import dotenv from "dotenv";
 import type { Params } from "astro";
+import type { Key } from "lucia-auth/auth";
 dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_ALGORITHM = 'HS256';
 
 export const protectedRoute = (params: Params, request: Request) => {
   // check for auth token
@@ -19,12 +23,8 @@ export const protectedRoute = (params: Params, request: Request) => {
       }
     );
   }
-
-  const JWT_SECRET = process.env.JWT_SECRET || '';
-  const JWT_ALGORITHM = 'HS256';
   // verify token
   try {
-    console.log('token', token);
     const verfiedToken = jwt.verify(token, JWT_SECRET);
     return verfiedToken;
   } catch (e) {
@@ -41,4 +41,12 @@ export const protectedRoute = (params: Params, request: Request) => {
     );
   }
 
+}
+
+export const getToken = async (userId: string) => {
+  const authToken = jwt.sign({
+    userId,
+  }, JWT_SECRET, { algorithm: JWT_ALGORITHM, expiresIn: '1d' });
+
+  return authToken;
 }
