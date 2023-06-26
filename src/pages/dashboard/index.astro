@@ -2,7 +2,7 @@
 import PageLayout from "@/layouts/Base";
 import { getToken } from "@/lib/auth";
 import { auth } from "@/lib/lucia.server";
-import { DatapointTypes, Prisma } from "@prisma/client";
+import HealthDataForm from "../../components/HealthData/HealthDataForm";
 
 const meta = {
   title: "Secrets",
@@ -24,24 +24,20 @@ if (!token) {
 
 if (Astro.request.method === "POST") {
   const form = await Astro.request.formData();
-  //get value from form and make sure it is a number
-  const value = Number(form.get("value"));
-  const respose = await fetch(`${Astro.url.origin}/api/protected/submitHealthData`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: "Bearer " + token,
-    },
-    body: JSON.stringify({
-      type: form.get("type"),
-      value: value,
-      unit: form.get("unit"),
-    }),
-  });
-}
+  // Retrieve the datapoints from the form data, and parse it back into a JSON object
+  const datapointsString = form.get("datapoints") ?? ("" as string);
+  console.log(datapointsString);
 
-const dataPointTypes = DatapointTypes as Record<string, string>;
+  // const respose = await fetch(`${Astro.url.origin}/api/protected/submitHealthData`, {
+  //   method: "POST",
+  //   credentials: "include",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     authorization: "Bearer " + token,
+  //   },
+  //   body: JSON.stringify(datapoints),
+  // });
+}
 
 export const prerender = false;
 ---
@@ -50,42 +46,7 @@ export const prerender = false;
   <div class="space-y-6">
     <h1 class="title">Secrets</h1>
     <p class="description">Secrect page for testing</p>
-    <form method="post">
-      <!-- DropDown of all available DatePointTypes -->
-      <label for="type" class="block text-sm font-medium text-gray-700"> Type</label>
-      <select
-        id="type"
-        name="type"
-        class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-accent focus:outline-none focus:ring-accent sm:text-sm"
-      >
-        {
-          Object.entries(dataPointTypes).map(([key, value]) => {
-            return <option value={key}>{value}</option>;
-          })
-        }
-      </select>
-
-      <label for="value" class="block text-sm font-medium text-gray-700"> Value</label>
-      <input
-        type="number"
-        name="value"
-        id="value"
-        class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-accent focus:outline-none focus:ring-accent sm:text-sm"
-      />
-      <label for="unit" class="block text-sm font-medium text-gray-700"> Unit</label>
-      <input
-        type="text"
-        name="unit"
-        id="unit"
-        class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-accent focus:outline-none focus:ring-accent sm:text-sm"
-      />
-      <button
-        type="submit"
-        class="flex w-full justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-semibold leading-6 text-bgColor shadow-sm hover:bg-accent-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark"
-      >
-        Submit Health Data
-      </button>
-    </form>
+    <HealthDataForm client:load />
     <form action="/api/logout" method="post">
       <button
         type="submit"
