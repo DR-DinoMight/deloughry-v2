@@ -105,7 +105,7 @@ model Datapoint {
   type         DatapointTypes
   value        Float
   unit         String
-  healthData   HealthData?    @relation(fields: [healthDataId], references: [id])
+  healthData   HealthData?    @relation(fields: [healthDataId], references: [id], onDelete: Cascade)
   healthDataId String?
 
   @@index([healthDataId])

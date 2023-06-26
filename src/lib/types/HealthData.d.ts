@@ -6,8 +6,9 @@ interface IDatapoint {
   unit: string;
 }
 
+
 interface DataPointProps {
   types: string[];
   datapoint: IDatapoint;
-  handleChange: (id: string, event: React.ChangeEvent<{ name?: string | undefined; value: unknown; }>) => void;
+  handleChange: (datapoint: IDatapoint, event: React.ChangeEvent<{ name?: string | undefined; value: unknown; }>) => void;
 }

@@ -22,23 +22,6 @@ if (!token) {
   return Astro.redirect("/auth/login", 302);
 }
 
-if (Astro.request.method === "POST") {
-  const form = await Astro.request.formData();
-  // Retrieve the datapoints from the form data, and parse it back into a JSON object
-  const datapointsString = form.get("datapoints") ?? ("" as string);
-  console.log(datapointsString);
-
-  // const respose = await fetch(`${Astro.url.origin}/api/protected/submitHealthData`, {
-  //   method: "POST",
-  //   credentials: "include",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     authorization: "Bearer " + token,
-  //   },
-  //   body: JSON.stringify(datapoints),
-  // });
-}
-
 export const prerender = false;
 ---
 
@@ -46,7 +29,7 @@ export const prerender = false;
   <div class="space-y-6">
     <h1 class="title">Secrets</h1>
     <p class="description">Secrect page for testing</p>
-    <HealthDataForm client:load />
+    <HealthDataForm client:load token={token} />
     <form action="/api/logout" method="post">
       <button
         type="submit"

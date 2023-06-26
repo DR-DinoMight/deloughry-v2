@@ -2,9 +2,8 @@ import { protectedRoute } from "@/lib/auth";
 import type { APIRoute } from "astro";
 import { PrismaClient, DatapointTypes } from "@prisma/client";
 
-
-
 export type HealthDataFormData = {
+  id: string;
   type: DatapointTypes;
   value: number;
   unit: string;
@@ -17,19 +16,39 @@ export const post: APIRoute = async ({ request, params }) => {
     return results;
   }
 
-  const body: HealthDataFormData = await request.json();
-
+  const body: HealthDataFormData | HealthDataFormData[] = await request.json();
+  console.log(body);
   const prisma = new PrismaClient();
+
+  //get body and get each health data point
+  let datapoints = [];
+  if (Array.isArray(body)) {
+    datapoints = body.map((datapoint) => {
+      return {
+        id: datapoint.id,
+        type: datapoint.type,
+        value: Number(datapoint.value),
+        unit: datapoint.unit,
+      };
+    });
+  } else {
+    datapoints = [
+      {
+        id: body.id,
+        type: body.type,
+        value: Number(body.value),
+        unit: body.unit,
+      },
+    ];
+  }
 
   const healthData = await prisma.healthData.create({
     data: {
       date: new Date(),
       datapoint: {
-        create: {
-          type: body.type,
-          value: body.value,
-          unit: body.unit,
-        },
+        createMany: {
+          data: datapoints,
+        }
       },
     }
   });
