@@ -71,6 +71,7 @@ const HealthDataForm = ({ token }: HealthDataFormProps) => {
     });
 
     if (results.status === 200) {
+      setDatapoints([{ id: uuidv4(), type: 'STEPS', value: '', unit: 'steps' }]);
       alert('Successfully submitted health data!');
     }
     else {
