@@ -12,18 +12,19 @@ async function main() {
 
   for await (const playlist of await getYearSoFarPlaylists()) {
     console.log("Getting Tracks for playlist: " + playlist.name);
+    if (playlist.name == "June '23") {
+      const tracks = await getTracksForPlaylist(playlist.id);
 
-    const tracks = await getTracksForPlaylist(playlist.id);
-
-    await addTracksToPlaylistDb(playlist, tracks, true);
+      await addTracksToPlaylistDb(playlist, tracks, true);
+    }
   }
 
-  for await (const playlist of await getPastJamsPlaylists()) {
-    console.log("Getting Tracks for playlist: " + playlist.name);
-    const tracks = await getTracksForPlaylist(playlist.id);
+  // for await (const playlist of await getPastJamsPlaylists()) {
+  //   console.log("Getting Tracks for playlist: " + playlist.name);
+  //   const tracks = await getTracksForPlaylist(playlist.id);
 
-    await addTracksToPlaylistDb(playlist, tracks, true);
-  }
+  //   await addTracksToPlaylistDb(playlist, tracks, true);
+  // }
 }
 
 main()

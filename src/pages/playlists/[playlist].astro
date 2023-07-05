@@ -43,7 +43,7 @@ export const prerender = true;
       <a href={playlist.externalUrl} class="cactus-link" target="_blank">
         <ImageWithBadge
           client:load
-          imageUrl={playlist.artwork.find((item: Artwork) => item.height == 300)?.url ?? ""}
+          imageUrl={playlist.artwork[0]?.url ?? ""}
           underText="Play on Spotify"
         />
       </a>
