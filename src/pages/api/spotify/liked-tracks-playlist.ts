@@ -43,7 +43,7 @@ export const post: APIRoute = async ({ request }) => {
   });
 
   if (playlists.findIndex((x) => x.name === currentDate) == -1) {
-    createPlaylist(currentDate);
+    await createPlaylist(currentDate);
   }
 
   playlist = playlists.find((x) => x.name === currentDate);
