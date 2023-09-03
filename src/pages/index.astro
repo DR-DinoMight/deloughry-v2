@@ -5,6 +5,7 @@ import PostPreview from "@/components/blog/PostPreview";
 import SocialList from "@/components/SocialList";
 import MeImage from "../assets/image.webp";
 import { sortMDByDate } from "@/utils";
+import { Image } from "astro:assets";
 
 const MAX_POSTS = 10;
 const allPosts = await getCollection("post");
@@ -16,8 +17,8 @@ export const prerender = true;
 	<section class="h-card mt-8 flex gap-6">
 		<a class="u-url hidden" rel="me" href="https://deloughry.co.uk/">Matthew Peck-Deloughry</a>
 		<a class="u-url hidden" href="acct:matt@deloughry.co.uk"></a>
-		<img
-			src={MeImage.src}
+		<Image
+			src={MeImage}
       height={MeImage.height}
       width={MeImage.width}
       alt="Matthew Peck-Deloughry"
