@@ -13,9 +13,9 @@ const postDate = getFormattedDate(content.data.publishDate);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<h1 class="p-name title">{content.data.title}</h1>
+<h1 class="p-name title" transition:name={"post-title" + content.slug}>{content.data.title}</h1>
 <a class="u-url" href={canonicalURL}
-	><time datetime={datetime} class="dt-published">{datetime}</time></a
+	><time datetime={datetime} class="dt-published" transition:name={"post-date" + content.slug}>{datetime}</time></a
 >
 {
 	!!content.data.tags?.length && (
@@ -37,7 +37,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 				<path d="M17.573 18.407l2.834 -2.834a2.025 2.025 0 0 0 0 -2.864l-7.117 -7.116" />
 				<path d="M6 9h-.01" />
 			</svg>
-			{content.data.tags.map((tag, i) => (
+			{content.data.tags.flatMap((tag, i) => (
 				<>
 					<a
 						class="cactus-link inline-block before:content-['#']"
@@ -52,4 +52,4 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		</div>
 	)
 }
-<p class="mt-8 border-l-4 border-accent pl-4 text-lg">{content.data.description}</p>
+<p class="mt-8 border-l-4 border-accent pl-4 text-lg" transition:name={"post-desc" + content.slug}>{content.data.description}</p>

@@ -38,7 +38,7 @@ export default function NowPlaying() {
 			} flex flex-col justify-center align-middle`}
 		>
 			{data?.isPlaying && (
-				<div className="space-around animation-slide-in-top mb-4 flex w-full items-center space-x-0 overflow-hidden rounded-lg bg-zinc-200 p-2 align-middle shadow-lg dark:bg-zinc-700 sm:space-x-2">
+				<div className="space-around mb-4 flex w-full items-center space-x-0 overflow-hidden rounded-lg bg-zinc-200 p-2 align-middle shadow-lg dark:bg-zinc-700 sm:space-x-2">
 					<ImageWithHeart
 						image={data?.song?.albumArt[2].url}
 						className="relative mr-2 h-[70px]"

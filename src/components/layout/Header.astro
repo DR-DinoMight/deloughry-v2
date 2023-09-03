@@ -1,6 +1,5 @@
 ---
 import ThemeToggle from "../ThemeToggle.astro";
-import { Image } from "@astrojs/image/components";
 import logoImg from "../../assets/logo-small.png";
 
 const url = new URL(Astro.request.url);
@@ -53,8 +52,10 @@ const menuLinks = [
       class="inline-flex items-center grayscale hover:filter-none sm:relative sm:inline-block"
       aria-current={url.pathname === "/" ? "page" : false}
     >
-      <Image
-        src={logoImg}
+      <img
+        src={logoImg.src}
+        height={logoImg.height}
+        width={logoImg.width}
         alt="A dino skull"
         loading="eager"
         class="mr-3 w-8 sm:absolute sm:left-[-4.5rem] sm:mr-0 sm:w-16"
