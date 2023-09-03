@@ -17,7 +17,7 @@ export const prerender = true;
 	<h1 class="title mb-6">Tags</h1>
 	<ul class="space-y-4">
 		{
-			Object.entries(allTags).map(([tag, val]) => (
+			Object.entries(allTags).flatMap(([tag, val]) => (
 				<li class="flex items-center gap-x-2">
 					<a
 						class="cactus-link inline-block"

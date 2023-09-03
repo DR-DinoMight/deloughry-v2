@@ -18,7 +18,7 @@ export const prerender = true;
   <h1 class="title mb-8 sm:mb-6">Year so far...</h1>
   <ul class="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-8">
     {
-      playlists.map((playlist) => {
+      playlists.flatMap((playlist) => {
         return (
           <li>
             <a href={`/playlists/${playlist.id}`} class="cactus-link">
@@ -38,7 +38,7 @@ export const prerender = true;
   <h1 class="title my-8 sm:my-6">Past Jams</h1>
   <ul class="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-8">
     {
-      pastPlaylists.map((playlist) => {
+      pastPlaylists.flatMap((playlist) => {
         return (
           <li>
             <a href={`/playlists/${playlist.id}`} class="cactus-link">

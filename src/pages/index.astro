@@ -52,7 +52,7 @@ export const prerender = true;
 		<h2 class="title mb-4 text-xl">Posts</h2>
 		<ul class="space-y-4 sm:space-y-2">
 			{
-				allPostsByDate.map((p) => (
+				allPostsByDate.flatMap((p) => (
 					<li class="flex flex-col gap-x-2 sm:flex-row">
 						<PostPreview post={p} />
 					</li>

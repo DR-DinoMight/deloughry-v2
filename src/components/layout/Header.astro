@@ -1,6 +1,7 @@
 ---
 import ThemeToggle from "../ThemeToggle.astro";
 import logoImg from "../../assets/logo-small.png";
+import { Image } from "astro:assets";
 
 const url = new URL(Astro.request.url);
 
@@ -69,7 +70,7 @@ const menuLinks = [
       aria-label="Main menu"
     >
       {
-        menuLinks.map((link) => (
+        menuLinks.flatMap((link) => (
           <a
             href={link.path}
             class="px-4 py-4 hover:text-link sm:py-0 sm:hover:underline"

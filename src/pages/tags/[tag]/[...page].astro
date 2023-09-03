@@ -12,7 +12,7 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 	const allPostsByDate = sortMDByDate(allPosts);
 	const uniqueTags = getUniqueTags(allPostsByDate);
 
-	return uniqueTags.map((tag) => {
+	return uniqueTags.flatMap((tag) => {
 		const filterPosts = allPostsByDate.filter((post) => post.data.tags?.includes(tag));
 		return paginate(filterPosts, {
 			params: { tag },
@@ -58,7 +58,7 @@ export const prerender = true;
 	<section aria-label="Blog post list">
 		<ul class="space-y-8 text-left">
 			{
-				page.data.map((p) => (
+				page.data.flatMap((p) => (
 					<li class="flex flex-col flex-wrap gap-x-2 sm:flex-row [&_q]:w-full">
 						<PostPreview post={p} as="h2" withDesc />
 					</li>

@@ -125,8 +125,8 @@ const GameOfLife = () => {
           }}>Random</button>
       </div>
       <div className="grid grid-cols-20 gap-1 mt-8">
-        {grid.map((rows, i) =>
-          rows.map((col, j) => (
+        {grid.flatMap((rows, i) =>
+          rows.flatMap((col, j) => (
             <div
               key={`${i}-${j}`}
               onClick={() => {

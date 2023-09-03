@@ -39,7 +39,7 @@ const menuLinks = [
     class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500"
   >
     {
-      menuLinks.map((link) => (
+      menuLinks.flatMap((link) => (
         <a
           href={link.path}
           class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-link sm:hover:underline"
