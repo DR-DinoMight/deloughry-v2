@@ -77,7 +77,7 @@ export async function addTracksToPlaylistDb(
       return false;
     }
 
-    let artworks = playlist?.images.map((image) => {
+    let artworks = playlist?.images.flatMap((image) => {
       const hash = crypto.createHash('sha256').update(image.url).digest('hex');
       return {
         create: {

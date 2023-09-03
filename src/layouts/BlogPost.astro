@@ -51,7 +51,7 @@ const { headings } = await post.render();
 			<h2 class="font-semibold">Table of Contents</h2>
 			<ul class="mt-4 space-y-5 text-xs">
 				{
-					headings.map(({ slug, text }) => (
+					headings.flatMap(({ slug, text }) => (
 						<li class="line-clamp-2 hover:text-accent">
 							<a href={`#${slug}`} aria-label={`Scroll to section: ${text}`}>
 								# {text}
