@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import PageLayout from "@/layouts/Base";
 import PostPreview from "@/components/blog/PostPreview";
 import SocialList from "@/components/SocialList";
-import { Image } from "@astrojs/image/components";
 import MeImage from "../assets/image.webp";
 import { sortMDByDate } from "@/utils";
 
@@ -17,9 +16,13 @@ export const prerender = true;
 	<section class="h-card mt-8 flex gap-6">
 		<a class="u-url hidden" rel="me" href="https://deloughry.co.uk/">Matthew Peck-Deloughry</a>
 		<a class="u-url hidden" href="acct:matt@deloughry.co.uk"></a>
-		<Image
-			src={MeImage}
+		<img
+			src={MeImage.src}
+      height={MeImage.height}
+      width={MeImage.width}
+      alt="Matthew Peck-Deloughry"
 			class="u-photo w-4/12 aspect-square hidden md:block rounded-lg shadow-lg"
+      transition:name={"profile-image"}
 		/>
 		<h1 class="flex-1 self-center text-2xl sm:text-4xl">
 			<span class="text-link">Developer.</span><br />

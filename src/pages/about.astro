@@ -1,6 +1,5 @@
 ---
 import PageLayout from "@/layouts/Base";
-import { Image } from "@astrojs/image/components";
 import aboutImg from "../assets/Matt.jpg";
 
 const meta = {
@@ -15,11 +14,14 @@ export const prerender = true;
 		<h1 class="title">About</h1>
 
 		<div class="flex justify-center">
-			<Image
-				src={aboutImg}
+			<img
+				src={aboutImg.src}
+        height={aboutImg.height}
+        width={aboutImg.width}
 				alt="A Photo of Matthew Deloughry looking off to the right."
 				loading="eager"
 				class="rounded-xl grayscale-0 hover:grayscale transition-all"
+        transition:name={"profile-image"}
 			/>
 		</div>
 

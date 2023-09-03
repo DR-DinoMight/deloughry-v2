@@ -6,6 +6,8 @@ import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/SkipLink";
 import siteConfig from "@/site-config";
 import NowPlaying from "src/components/NowPlaying";
+import { ViewTransitions } from 'astro:transitions';
+
 
 interface Props {
 	meta: SiteMeta;
@@ -31,35 +33,42 @@ const {
 				return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 			}
 
-			const isDark = getThemePreference() === "dark";
 
-			// watch document element class attribute and update user preference when it changes.
-			const observer = new MutationObserver(() => {
-				const rootIsDark = root.classList.contains("dark");
-				// set the meta attribute
-				colorThemeMetaTag.setAttribute(
-					"content",
-					siteConfig[rootIsDark ? "themeColorDark" : "themeColorLight"]
-				);
-				// store user preference
-				if (typeof localStorage !== "undefined") {
-					localStorage.setItem("theme", rootIsDark ? "dark" : "light");
-				}
-			});
-			observer.observe(root, { attributeFilter: ["class"] });
+      function watchTheme(){
+			  const isDark = getThemePreference() === "dark";
 
-			// initailse root class attribute
-			root.classList.toggle("dark", isDark);
+        // watch document element class attribute and update user preference when it changes.
+        const observer = new MutationObserver(() => {
+          const rootIsDark = root.classList.contains("dark");
+          // set the meta attribute
+          colorThemeMetaTag.setAttribute(
+            "content",
+            siteConfig[rootIsDark ? "themeColorDark" : "themeColorLight"]
+          );
+          // store user preference
+          if (typeof localStorage !== "undefined") {
+            localStorage.setItem("theme", rootIsDark ? "dark" : "light");
+          }
+        });
+        observer.observe(root, { attributeFilter: ["class"] });
+
+        // initailse root class attribute
+        root.classList.toggle("dark", isDark);
+      }
+
+      document.addEventListener("DOMContentLoaded", watchTheme);
+      document.addEventListener("astro:after-swap", watchTheme);
 		</script>
 
 		<link rel="webmention" href="https://webmention.io/deloughry.co.uk/webmention" />
 		<link rel="pingback" href="https://webmention.io/deloughry.co.uk/xmlrpc" />
+    <ViewTransitions />
 	</head>
 	<body>
 		<SkipLink />
-		<Header />
+		<Header  transition:name="header"  />
 		<main id="main" class="flex-1">
-			<NowPlaying client:visible />
+			<NowPlaying client:visible  transition:name="now-playing" transition:animate={"slide"} transition:persist/>
 			<slot />
 		</main>
 		<Footer />

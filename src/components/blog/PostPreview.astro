@@ -14,10 +14,10 @@ const datetime = date.toISOString();
 const postDate = getFormattedDate(date, { month: "short" });
 ---
 
-<time datetime={datetime} class="min-w-[120px] text-gray-500">{postDate}</time>
+<time datetime={datetime} class="min-w-[120px] text-gray-500" transition:name={"post-date" + post.slug}>{postDate}</time>
 <Element>
-	<a href={`/posts/${post.slug}`} class="cactus-link" rel="prefetch">
+	<a href={`/posts/${post.slug}`} class="cactus-link" rel="prefetch" transition:name={"post-title" + post.slug}>
 		{post.data.title}
 	</a>
 </Element>
-{withDesc && <q class="mt-2 block italic line-clamp-3">{post.data.description}</q>}
+{withDesc && <q class="mt-2 block italic line-clamp-3" transition:name={"post-desc" + post.slug}>{post.data.description}</q>}
