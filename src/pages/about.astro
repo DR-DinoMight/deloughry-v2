@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base";
 import aboutImg from "../assets/Matt.jpg";
-
+import { Image } from "astro:assets";
 const meta = {
 	title: "About",
 	description: "All about me Matt 🧑‍⚕️_🦖🧨",
@@ -14,8 +14,8 @@ export const prerender = true;
 		<h1 class="title">About</h1>
 
 		<div class="flex justify-center">
-			<img
-				src={aboutImg.src}
+			<Image
+				src={aboutImg}
         height={aboutImg.height}
         width={aboutImg.width}
 				alt="A Photo of Matthew Deloughry looking off to the right."
