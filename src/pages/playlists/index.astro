@@ -3,7 +3,6 @@ import PageLayout from "@/layouts/Base";
 import { getYearSoFarPlaylistsFromDB, getPastJamsPlaylistsFromDB } from "../../lib/spotify";
 import ImageWithBadge from "src/components/ImageWithBadge";
 import type { PlaylistWithAllRelationships } from "@/lib/types/spotify";
-import type { Artwork } from "@prisma/client";
 
 const playlists: PlaylistWithAllRelationships[] = await getYearSoFarPlaylistsFromDB();
 const pastPlaylists: PlaylistWithAllRelationships[] = await getPastJamsPlaylistsFromDB();
