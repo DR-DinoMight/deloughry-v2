@@ -43,6 +43,7 @@
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
+		"@astrojs/deno": "^5.0.0",
 		"@astrojs/netlify": "^3.0.1",
 		"@astrojs/prefetch": "^0.4.0",
 		"@astrojs/react": "^3.0.0",
