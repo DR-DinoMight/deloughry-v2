@@ -32,7 +32,7 @@ export default defineConfig({
     }
   },
   adapter: netlify({
-    builders: true,
-    // edgeMiddleware: true,
+    // builders: true,
+    edgeMiddleware: true,
   })
 });
