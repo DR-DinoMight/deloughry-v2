@@ -5,7 +5,6 @@ import ImageWithBadge from "src/components/ImageWithBadge";
 import Tracks from "src/components/Tracks";
 import type { PlaylistWithAllRelationships, TrackWithAllRelationships } from "@/lib/types/spotify";
 import { getPlaylistsfromDB } from "@/data/models/playlist";
-import type { Artwork } from "@prisma/client";
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
   const params = [];

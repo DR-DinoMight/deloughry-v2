@@ -7,6 +7,7 @@ const meta = {
   description: "",
 };
 
+// ts-ignore
 const authRequest = auth.handleRequest(Astro);
 const { user } = await authRequest.validateUser();
 

@@ -1,5 +1,4 @@
 ---
-import { getFormattedDate } from "@/utils";
 import type { CollectionEntry } from "astro:content";
 
 interface Props {
@@ -9,7 +8,6 @@ interface Props {
 const { content } = Astro.props;
 
 const datetime = content.data.publishDate.toISOString();
-const postDate = getFormattedDate(content.data.publishDate);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
