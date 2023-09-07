@@ -31,5 +31,8 @@ export default defineConfig({
       exclude: ["@resvg/resvg-js"]
     }
   },
-  adapter: netlify()
+  adapter: netlify({
+    builders: true,
+    // edgeMiddleware: true,
+  })
 });
