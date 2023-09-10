@@ -9,7 +9,14 @@ export default function NowPlaying() {
 	let interval = null;
 	const [progress, setProgress] = useState(0);
 
-	const { data, mutate, error, isLoading } = useSWR("/api/spotify/now-playing", fetcher, {
+  // const { data, mutate, error, isLoading } = useSWR("http://localhost:3000/spotify/now-playing", fetcher, {
+	// 	onSuccess: (data) => {
+	// 		clearInterval(interval);
+	// 		setProgress(data?.song?.progress);
+	// 	},
+	// });
+
+	const { data, mutate, error, isLoading } = useSWR("https://api.deloughry.co.uk/spotify/now-playing", fetcher, {
 		onSuccess: (data) => {
 			clearInterval(interval);
 			setProgress(data?.song?.progress);
