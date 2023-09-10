@@ -42,7 +42,7 @@ const { headings } = await post.render();
 		<article class="h-entry break-words">
 			<div id="blog-hero"><BlogHero content={post} /></div>
 			<div
-				class="prose prose-sm prose-cactus w-full prose-headings:font-semibold prose-headings:before:absolute prose-headings:before:text-accent prose-headings:before:content-['#'] prose-th:before:content-none"
+				class="prose prose-sm prose-cactus w-full prose-headings:font-semibold prose-headings:before:flex-row prose-heading:before:mr-4 prose-headings:before:text-accent prose-headings:before:content-['#'] prose-th:before:content-none"
 			>
 				<slot />
 			</div>

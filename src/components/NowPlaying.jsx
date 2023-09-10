@@ -42,7 +42,7 @@ export default function NowPlaying() {
 		<div
 			className={`${
 				data?.isPlaying ? "visible" : "invisible"
-			} flex flex-col justify-center align-middle`}
+			} flex flex-col justify-center align-middle transition-all duration-250 ease-in-out`}
 		>
 			{data?.isPlaying && (
 				<div className="space-around mb-4 flex w-full items-center space-x-0 overflow-hidden rounded-lg bg-zinc-200 p-2 align-middle shadow-lg dark:bg-zinc-700 sm:space-x-2">
