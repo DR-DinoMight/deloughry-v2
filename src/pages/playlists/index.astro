@@ -1,16 +1,17 @@
 ---
 import PageLayout from "@/layouts/Base";
-import { getYearSoFarPlaylistsFromDB, getPastJamsPlaylistsFromDB } from "../../lib/spotify";
 import ImageWithBadge from "src/components/ImageWithBadge";
-import type { PlaylistWithAllRelationships } from "@/lib/types/spotify";
+import type { Playlist } from "@/lib/types/spotify";
 
-const playlists: PlaylistWithAllRelationships[] = await getYearSoFarPlaylistsFromDB();
-const pastPlaylists: PlaylistWithAllRelationships[] = await getPastJamsPlaylistsFromDB();
+
+const playlists: Playlist[] = await (await fetch(import.meta.env.API_URL +'/spotify/playlists/monthly')).json();
+const pastPlaylists: Playlist[] = await (await fetch(import.meta.env.API_URL +'/spotify/playlists/years')).json();
 const meta = {
   title: "Spotify Jams",
   description: "A collection of monthly liked songs",
 };
-export const prerender = true;
+
+export const prerender = true
 ---
 
 <PageLayout meta={meta}>
