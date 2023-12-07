@@ -24,9 +24,9 @@ const {
 		<script define:vars={{ siteConfig }}>
 			const root = document.documentElement;
 			const colorThemeMetaTag = document.querySelector("meta[name='theme-color']");
-
 			// get user preference of dark mode, 1st local storage, 2nd browser
 			function getThemePreference() {
+        console.log("data", typeof localStorage, localStorage.getItem("theme"))
 				if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
 					return localStorage.getItem("theme");
 				}
@@ -36,7 +36,7 @@ const {
 
       function watchTheme(){
 			  const isDark = getThemePreference() === "dark";
-
+        console.log('watchTheme',isDark);
         // watch document element class attribute and update user preference when it changes.
         const observer = new MutationObserver(() => {
           const rootIsDark = root.classList.contains("dark");
@@ -45,10 +45,7 @@ const {
             "content",
             siteConfig[rootIsDark ? "themeColorDark" : "themeColorLight"]
           );
-          // store user preference
-          if (typeof localStorage !== "undefined") {
-            localStorage.setItem("theme", rootIsDark ? "dark" : "light");
-          }
+
         });
         observer.observe(root, { attributeFilter: ["class"] });
 

@@ -12,7 +12,12 @@
 			}
 
 			// button clicked, toggle dark mode
-			button.addEventListener("click", () => setTheme(!this.isDark()));
+			button.addEventListener("click", () => {
+          // set localstorage?
+        console.log("setting Localstorage theme", !this.isDark())
+        localStorage.setItem("theme", !this.isDark() ? "dark" : "light");
+        setTheme(!this.isDark())
+      });
 
 			// Initalise button state
 			setTheme(this.isDark());
