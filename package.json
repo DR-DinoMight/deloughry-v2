@@ -41,9 +41,11 @@
 		"prettier-plugin-tailwindcss": "^0.5.4",
 		"tailwind-scrollbar": "^3.0.5",
 		"tailwindcss": "^3.3.3",
-		"typescript": "^5.2.2",
-    "@img/sharp-win32-x64": "^0.33.1"
+		"typescript": "^5.2.2"
 	},
+  "optionalDependencies" : {
+    "@img/sharp-win32-x64": "^0.33.1"
+  },
 	"dependencies": {
 		"@astrojs/netlify": "^3.1.1",
 		"@astrojs/prefetch": "^0.4.1",
