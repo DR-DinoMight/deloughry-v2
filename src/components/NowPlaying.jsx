@@ -47,7 +47,7 @@ export default function NowPlaying() {
         <div className="sticky space-around mb-4 flex w-full items-center space-x-0 overflow-hidden rounded-lg bg-zinc-200 p-2 align-middle shadow-lg dark:bg-zinc-700 sm:space-x-2">
           <ImageWithHeart
             image={data?.song?.albumArt[2].url}
-            className="relative mr-2 h-[70px]"
+            className="relative mr-2 w-[70px] aspect-square"
             isLiked={data?.song?.isLiked}
           />
           <div>
