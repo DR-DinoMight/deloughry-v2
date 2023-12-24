@@ -1,42 +1,51 @@
-@import url(https://fonts.bunny.net/css?family=jetbrains-mono:400,400i,600,600i,800,800i);
+@import url(https://fonts.bunny.net/css?family=oswald:400,500,600|roboto:400);
 @tailwind base;
 
 @layer base {
   :root {
     color-scheme: light;
-    --theme-bg: #fafafa;
-    --theme-link: #567c77;
-    --theme-text: #22272a;
-    --theme-accent: #cc2a42;
-    --theme-accent-hover: #6F1724;
-    --theme-accent-2: #111;
-    --theme-quote: #cc2a42;
-    --theme-accent-bg: rgba(125, 136, 146, 0.85);
-    --github: #6cc644;
-    --twitch: rgb(100 65 165);
-    --twitter: rgb(29 161 242);
-    --mastodon: #5648d4;
-    --youtube: #ff0000;
-    --claw: #bc1116;
+    --theme-bg: #f3f5f8; /* Light Blueish Gray */
+    --theme-link: #ae0e4e; /* Darker Pink on Hover */
+    --theme-text: #333333; /* Dark Gray */
+    --theme-accent: #d81b60; /* Pink Accent */
+    --theme-accent-hover: #ae0e4e; /* Darker Pink on Hover */
+    --theme-quote: #555555; /* Dark Gray for Quote */
+    --theme-accent-bg: rgba(175, 180, 200, 0.85); /* Semi-transparent Grayish Blue */
+    --github: #6cc644; /* GitHub Green */
+    --twitch: #9146ff; /* Twitch Purple */
+    --twitter: #1da1f2; /* Twitter Blue */
+    --mastodon: #7241d4; /* Mastodon Purple */
+    --youtube: #ff0000; /* YouTube Red */
+    --claw: #ff5722; /* Claw Orange */
   }
 
   :root.dark {
     color-scheme: dark;
-    --theme-bg: #191919;
-    --theme-link: #eab308;
-    --theme-text: #fcfefe;
-    --theme-accent: #00f701;
-    --theme-accent-hover: #008701;
-    --theme-accent-2: var(--theme-accent);
-    --theme-quote: #ccffb6;
+    --theme-bg: #1a1a1a; /* Dark Gray */
+    --theme-link: #004d45; /* Darker Teal on Hover */
+    --theme-text: #f0f0f0; /* Light Gray */
+    --theme-accent: #00796b; /* Teal Accent */
+    --theme-accent-hover: #004d45; /* Darker Teal on Hover */
+    --theme-quote: #888888;
   }
+
+
+
 
   html {
     @apply h-full scroll-smooth border-t-2 border-[var(--theme-accent)];
   }
 
   html body {
-    @apply mx-auto flex h-full w-full max-w-3xl flex-col bg-bgColor px-8 pt-16 font-mono font-normal text-textColor antialiased;
+    @apply mx-auto flex h-full w-full max-w-5xl flex-col bg-bgColor px-8 pt-16 font-roboto font-normal text-textColor antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6, nav {
+    @apply font-oswald uppercase
+  }
+
+  nav a, main a, article a {
+    @apply underline
   }
 
   .astro-code {

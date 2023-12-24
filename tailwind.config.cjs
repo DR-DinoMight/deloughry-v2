@@ -36,7 +36,6 @@ module.exports = {
         link: "var(--theme-link)",
         accent: "var(--theme-accent)",
         "accent-dark": "var(--theme-accent-hover)",
-        "accent-2": "var(--theme-accent-2)",
         "accent-bg": "var(--theme-accent-bg)",
         twitch: "var(--twitch)",
         twitter: "var(--twitter)",
@@ -48,7 +47,8 @@ module.exports = {
       },
       fontFamily: {
         // Add any custom fonts here
-        mono: ["JetBrains Mono"],
+        'oswald': 'Oswald',
+        'roboto': 'Roboto',
         sans: [...fontFamily.sans],
         serif: [...fontFamily.serif],
       },
@@ -59,7 +59,7 @@ module.exports = {
         cactus: {
           css: {
             "--tw-prose-body": "var(--theme-text)",
-            "--tw-prose-headings": "var(--theme-accent-2)",
+            "--tw-prose-headings": "var(--theme-accent)",
             "--tw-prose-links": "var(--theme-text)",
             "--tw-prose-bold": "var(--theme-text)",
             "--tw-prose-bullets": "var(--theme-text)",
@@ -72,7 +72,7 @@ module.exports = {
         DEFAULT: {
           css: {
             a: {
-              "@apply cactus-link text-accent no-underline": "",
+              "@apply cactus-link text-accent": "",
             },
             strong: {
               fontWeight: "700",
@@ -117,18 +117,29 @@ module.exports = {
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
     require("@tailwindcss/aspect-ratio"),
+    require('tailwind-scrollbar'),
     plugin(function ({ addComponents }) {
       addComponents({
         ".cactus-link": {
           color: "var(--theme-accent)",
-          "@apply bg-[size:100%_6px] bg-bottom bg-repeat-x no-underline": {},
+          "@apply bg-[size:100%_6px] bg-bottom bg-repeat-x underline": {},
           "&:hover": {
             color: "var(--theme-link)",
           },
         },
         ".title": {
-          "@apply text-2xl font-semibold text-accent-2": {},
+          "@apply text-2xl font-semibold text-accent": {},
         },
+        ".prose p, .prose blockquote, .prose ul": {
+          "@apply max-w-xl": {}
+         },
+        ".prose pre, .prose h1, .prose h2,.prose h3,.prose h4,.prose h5,.prose h6": {
+          "@apply max-w-3xl": {}
+         },
+        ".prose pre": {
+          // show y scrollbar always
+          "@apply scrollbar scrollbar-thumb-accent scrollbar-track-accent": {},
+        }
       });
     }),
   ],

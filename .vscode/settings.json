@@ -5,7 +5,7 @@
 	"[markdown]": {
 		"editor.wordWrap": "on",
 		"editor.codeActionsOnSave": {
-			"source.fixAll.markdownlint": true
+			"source.fixAll.markdownlint": "explicit"
 		}
 	},
 	"prettier.documentSelectors": ["**/*.astro"],
