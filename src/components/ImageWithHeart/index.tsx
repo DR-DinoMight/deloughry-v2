@@ -8,11 +8,11 @@ interface Props {
 export const ImageWithHeart: React.FC<Props> = ({ image, isLiked, className }) => {
   return (
     <div className={className}>
-      <img src={image} className="h-full w-full" alt="Image" />
+      <img src={image} className="h-full w-full" alt="Currently now-playing image" />
       {isLiked && (
         <div className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.3)] ">
           <svg
-            className="thumbsUp h-[70%] w-[70%] fill-white stroke-accent shadow-lg"
+            className="thumbsUp h-[70%] w-[70%] fill-accent-bg stroke-accent shadow-lg"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"

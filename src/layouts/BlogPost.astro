@@ -42,7 +42,7 @@ const { headings } = await post.render();
 		<article class="h-entry break-words">
 			<div id="blog-hero"><BlogHero content={post} /></div>
 			<div
-				class="prose prose-sm prose-cactus w-full prose-headings:font-semibold prose-headings:before:flex-row prose-heading:before:mr-4 prose-headings:before:text-accent prose-headings:before:content-['#'] prose-th:before:content-none"
+				class="prose prose-sm prose-cactus w-full prose-headings:font-semibold prose-headings:before:flex-row prose-heading:before:mr-4 prose-headings:before:text-accent prose-headings:before:content-['#'] prose-th:before:content-none  max-w-3xl"
 			>
 				<slot />
 			</div>
@@ -52,7 +52,7 @@ const { headings } = await post.render();
 			<ul class="mt-4 space-y-5 text-xs">
 				{
 					headings.flatMap(({ slug, text }) => (
-						<li class="line-clamp-2 hover:text-accent">
+						<li class="line-clamp-2 text-accent hover:text-link font-oswald font-bold uppercase">
 							<a href={`#${slug}`} aria-label={`Scroll to section: ${text}`}>
 								# {text}
 							</a>
