@@ -31,8 +31,8 @@ const menuLinks = [
 
 <script>
   import { toggleClass } from "@/utils";
-
-  document.addEventListener("DOMContentLoaded", () => {
+  function toggleMenu() {
+    console.log('DOMContentLoaded');
     const header = document.getElementById("main-header") as HTMLElement;
     const toggleMenuButton = document.getElementById("toggle-navigation-menu") as HTMLButtonElement;
     let menuOpen = false;
@@ -42,7 +42,10 @@ const menuLinks = [
       menuOpen = !menuOpen;
       toggleMenuButton.setAttribute("aria-expanded", menuOpen.toString());
     });
-  });
+
+  }
+  document.addEventListener("DOMContentLoaded", toggleMenu);
+  document.addEventListener("astro:after-swap", toggleMenu);
 </script>
 
 <header id="main-header" class="group relative mb-8 flex items-center sm:pl-[4.5rem]">
