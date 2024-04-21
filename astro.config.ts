@@ -22,6 +22,9 @@ export default defineConfig({
     }
   },
   output: "server",
+  adapter: netlify({
+    imageCDN: false,
+  }),
   integrations: [mdx({}), tailwind({
     config: {
       applyBaseStyles: false
