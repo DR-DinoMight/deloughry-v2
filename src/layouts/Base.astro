@@ -7,7 +7,7 @@ import SkipLink from "@/components/SkipLink";
 import siteConfig from "@/site-config";
 import NowPlaying from "src/components/NowPlaying";
 import { ViewTransitions } from 'astro:transitions';
-
+import  SpeedInsights  from "@vercel/speed-insights/astro"
 
 interface Props {
 	meta: SiteMeta;
@@ -69,5 +69,6 @@ const {
 			<slot />
 		</main>
 		<Footer />
+    <SpeedInsights />
 	</body>
 </html>
