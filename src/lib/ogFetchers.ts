@@ -1,14 +1,9 @@
 import ogs from 'open-graph-scraper';
 
 const ogFetcher = async (url: string) => {
-  try {
-    const data = await ogs({url: url, timeout: 5000});
-    return {
-      ...data.result
-    }
-  } catch (err) {
-    throw new Error("Failed to fetch OpenGraph data: " + err);
-  }
+    const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36';
+    const data = await ogs({url: url, timeout: 5000, onlyGetOpenGraphInfo: true, fetchOptions: { headers: { 'user-agent': userAgent } }});
+    return data?.result ?? []
 }
 
 export {

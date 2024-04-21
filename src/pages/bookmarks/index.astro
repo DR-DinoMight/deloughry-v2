@@ -3,6 +3,7 @@ import PageLayout from "@/layouts/Base";
 import { ogFetcher } from "@/lib/ogFetchers";
 import logoImg from "../../assets/logo-small.png";
 import { Image } from "astro:assets";
+import BookmarkTags from "@/components/BookmarkTags";
 
 
 const bookmarks = await (await fetch(import.meta.env.API_URL +'/bookmarks')).json();
@@ -16,12 +17,14 @@ const meta = {
 
 const bookmarksWithMetadata =  await Promise.all(
   bookmarks.map(async bookmark => {
+    console.log(bookmark['link'])
     const results = await ogFetcher(bookmark['link']);
     return {
       ...bookmark,
       metadata: results,
     }
 }));
+
 
 export const prerender = true
 ---
@@ -34,32 +37,28 @@ export const prerender = true
         return (
           <li key={bookmark.id} class="divide-y divide-lime-700 divide-gray-200">
             <a href={bookmark.link} class="cactus-link">
-              {bookmark.metadata.ogImage && (
+              {bookmark.metadata && bookmark.metadata.ogImage && (
 
                 <Image
                   src={bookmark.metadata.ogImage[0].url}
-                  alt={bookmark.metadata.ogImage[0].alt}
+                  alt={bookmark.metadata.ogImage[0]?.alt ?? bookmark.link}
                   height={logoImg.height}
                   width={logoImg.width}
                   class="w-full h-40 object-cover rounded-lg"
                 />)
               }
-              {!bookmark?.metadata?.ogImage && (
+              {(!bookmark.metadata || !bookmark?.metadata?.ogImage) && (
                 <Image
                   src={logoImg}
                   height={logoImg.height}
                   width={logoImg.width}
-                  alt={bookmark.metadata.ogTitle}
+                  alt={bookmark.link}
                   class="w-full h-40 object-cover rounded-lg"
-                />)
-              }
-              <p class="mt-3">{bookmark.metadata.ogTitle}</p>
-              <small class="text-sm">{bookmark.category}</small>
-              {bookmark.tags && (
-                <p class="text-xs text-gray-500">
-                  Tags: {bookmark.tags}
-                </p>
+                />
               )}
+              <p class="mt-3">{bookmark.metadata?.ogTitle ?? bookmark.link}</p>
+              <small class="text-sm">{bookmark.category}</small>
+              <BookmarkTags tags={bookmark.tags.split(",")} />
             </a>
           </li>
         );
