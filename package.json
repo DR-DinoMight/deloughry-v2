@@ -68,6 +68,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"lucia-auth": "^1.8.0",
 		"node-fetch": "^3.3.2",
+		"open-graph-scraper": "^6.5.1",
 		"prisma": "^5.7.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
