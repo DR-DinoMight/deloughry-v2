@@ -1,9 +1,8 @@
 ---
 const { tags } = Astro.props;
 ---
-<small>
- <span>Tags:</span>
+<>
     { tags &&  tags.map( tag => {
-      return <span class="line-clamp-2 text-accent hover:text-link font-oswald font-bold uppercase">{tag}</span>
+      return <span class="uppercase inline-block bg-accent text-textColor px-2 py-1 rounded-md text-xs font-medium ">{tag}</span>
     })}
-</small>
+</>

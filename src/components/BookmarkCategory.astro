@@ -1,0 +1,47 @@
+---
+import BookmarkTags from "./BookmarkTags.astro";
+import logoImg from "../assets/logo-small.png";
+import { Image } from "astro:assets";
+
+const { bookmarks, title } = Astro.props;
+---
+<>
+<h2 class="font-semibold text-accent text-xl underline mb-4 sm:mb-2">{title}</h2>
+<section class="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4 md:py-6">
+  {
+    bookmarks.map(bookmark => {
+      return (
+          <a href={bookmark.link} class="relative rounded-lg group ">
+            {bookmark.metadata && bookmark.metadata.ogImage && (
+
+              <Image
+                src={bookmark.metadata.ogImage[0].url}
+                alt={bookmark.metadata.ogImage[0]?.alt ?? bookmark.link}
+                height={logoImg.height}
+                width={logoImg.width}
+                class="w-full h-auto object-cover group-hover:opacity-70 transition-all group-hover:w-[110%]"
+              />)
+            }
+            {(!bookmark.metadata || !bookmark?.metadata?.ogImage) && (
+              <Image
+                src={logoImg}
+                height={logoImg.height}
+                width={logoImg.width}
+                alt={bookmark.link}
+                class="w-full h-auto object-cover group-hover:opacity-70 transition-all"
+              />
+            )}
+            <div class="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-bgColor from-20%">
+              <div class="space-y-2">
+                <div class="flex flex-wrap gap-2">
+                  <BookmarkTags tags={bookmark.tags.split(",")} />
+                </div>
+                <h3 aria-label="Title of the card" class="text-lg font-bold text-accent">{bookmark.metadata?.ogTitle ?? bookmark.link}</h3>
+              </div>
+            </div>
+          </a>
+      );
+    })
+  }
+</section>
+</>

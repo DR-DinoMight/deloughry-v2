@@ -1,10 +1,7 @@
 ---
+import BookmarkCategory from "@/components/BookmarkCategory";
 import PageLayout from "@/layouts/Base";
 import { ogFetcher } from "@/lib/ogFetchers";
-import logoImg from "../../assets/logo-small.png";
-import { Image } from "astro:assets";
-import BookmarkTags from "@/components/BookmarkTags";
-
 
 const bookmarks = await (await fetch(import.meta.env.API_URL +'/bookmarks')).json();
 
@@ -17,7 +14,6 @@ const meta = {
 
 const bookmarksWithMetadata =  await Promise.all(
   bookmarks.map(async bookmark => {
-    console.log(bookmark['link'])
     const results = await ogFetcher(bookmark['link']);
     return {
       ...bookmark,
@@ -25,44 +21,17 @@ const bookmarksWithMetadata =  await Promise.all(
     }
 }));
 
+//split bookmarks into arrays grouped by categories ('useful','fun','affliate')
+const usefulBookmarks = bookmarksWithMetadata.filter(bookmark => bookmark.category === 'useful');
+const funBookmarks = bookmarksWithMetadata.filter(bookmark => bookmark.category === 'fun');
+const affiliateBookmarks = bookmarksWithMetadata.filter(bookmark => bookmark.category === 'affiliate');
 
 export const prerender = true
 ---
 
 <PageLayout meta={meta}>
   <h1 class="title mb-8 sm:mb-6">Bookmarks I find fun, useful, or just more people need to see...</h1>
-  <ul class="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-8">
-    {
-      bookmarksWithMetadata.map(bookmark => {
-        return (
-          <li key={bookmark.id} class="divide-y divide-lime-700 divide-gray-200">
-            <a href={bookmark.link} class="cactus-link">
-              {bookmark.metadata && bookmark.metadata.ogImage && (
-
-                <Image
-                  src={bookmark.metadata.ogImage[0].url}
-                  alt={bookmark.metadata.ogImage[0]?.alt ?? bookmark.link}
-                  height={logoImg.height}
-                  width={logoImg.width}
-                  class="w-full h-40 object-cover rounded-lg"
-                />)
-              }
-              {(!bookmark.metadata || !bookmark?.metadata?.ogImage) && (
-                <Image
-                  src={logoImg}
-                  height={logoImg.height}
-                  width={logoImg.width}
-                  alt={bookmark.link}
-                  class="w-full h-40 object-cover rounded-lg"
-                />
-              )}
-              <p class="mt-3">{bookmark.metadata?.ogTitle ?? bookmark.link}</p>
-              <small class="text-sm">{bookmark.category}</small>
-              <BookmarkTags tags={bookmark.tags.split(",")} />
-            </a>
-          </li>
-        );
-      })
-    }
-  </ul>
+  {usefulBookmarks && (<BookmarkCategory title="Useful" bookmarks={usefulBookmarks} />)}
+  {funBookmarks.length > 0 && (<BookmarkCategory title="Fun" bookmarks={funBookmarks} />)}
+  {affiliateBookmarks.length > 0 && (<BookmarkCategory title="Affiliate" bookmarks={affiliateBookmarks} />)}
 </PageLayout>
