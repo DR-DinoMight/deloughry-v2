@@ -61,6 +61,7 @@
 		"@types/react": "^18.2.45",
 		"@types/react-dom": "^18.2.18",
 		"@types/spotify-api": "^0.0.25",
+		"@vercel/analytics": "^1.2.2",
 		"@vercel/speed-insights": "^1.0.10",
 		"astro": "^4.0.8",
 		"astro-compress": "^2.2.5",
