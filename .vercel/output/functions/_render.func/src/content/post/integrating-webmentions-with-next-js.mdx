@@ -1,0 +1,392 @@
+---
+title: "Integrating Webmentions with Next.JS"
+publishDate: "24 April 2022"
+description: "Let me introduce you to Webmentions - a recent discovery that brought back memories of pingbacks and Tumblr's social features. I had to implement it myself!"
+tags: ["TIL"]
+---
+
+> As with all my technical documents, I like to preface the articles, that I don’t pretend to be a master in said topic, nor always do stuff the best way, these articles are here as a documentation of my exploration, and if you find this useful then awesome! If you see something you want to discuss please hit me up on twitter as I’m always up for a good chat!
+
+Recently I had a few days off from work and what do I do? I found myself coding more and more features on the website...You know what I do for a living, doh! But regardless I found myself having tons of fun and knocked out a blog post ([Using MongoDB’s Data API, Next.js with SWR to make a pack click tracker](https://deloughry.co.uk/logs/using-mongodb-s-data-api-next-js-with-swr-to-make-a-page-click-tracker)), next I read about [Webmentions](https://www.w3.org/TR/webmention/) and suddenly was hit with a major case of nostalgia of the days of pingbacks and the days of seeing the long list of likes, shares and reposts on Tumblr (Yes! I was one of those angsty teenagers 😛).
+
+Well, I had to implement it, and after doing some digging I found an awesome [article](https://aboutmonica.com/blog/getting-started-with-webmention-next-js/) by [Monica Powel](https://aboutmonica.com) where they documented a recent stream of [Jason Lengstorf’s Learn with Jason](https://www.learnwithjason.dev/webmention-next-js) on stream to build Webmentions into a Next.js and Netlify starter kit, I recommend that you start there if you want to learn more about [Getting Started with Webmention in Next Js](https://aboutmonica.com/blog/getting-started-with-webmention-next-js/) that's what I did, and here I’m just going to also document the modifications and tweaks I did to get it working how I wanted.
+
+## Getting started with Webmentions
+
+As mentioned in Monica’s article the best way currently to get started is by using [webmention.io](https://webmention.io) this is a hosted service that will handle all the incoming (and outgoing) Webmentions, so you don’t have to build a service yourself (If people are interested I will happily look at what it take to host your own service). Alongside [webmention.io](http://webmention.io) if you want to also include social media such as Twitter, GitHub (yes there’s a social aspect to it too 😛) we also want to use [Bridgy](https://brid.gy/) This will do all the work of trawling each platform for any mentions, likes and reposts and convert them into Webmention format and post them to you if even does historical links too!
+
+### Setting up [webmention.io](http://webmention.io)
+
+How I got started with [webmention.io](http://Webmention.io) was pretty simple, all I had to do was to make sure I had either a Twitter or Github link to my respective profile on the homepage which I already had, so all that meant was that I just had to alter the existing social links and just add `rel=‘me’` to both GitHub and Twitter links (it’s also worth mentioning that you need the links that social bios provide to link to the site you are wanting to use Webmention on). Once I pushed the changes live I went back into [webmention.io](undefined) and tried to authenticate again, this time it took me to the dashboard that enabled me to log into the dashboard ready for implementation.
+
+Once I met all the requirements, [webmention.io](http://Webmentions.io) then required me to then add some links to the Head of my website’s layout :
+
+```html
+<link rel="webmention" href="https://webmention.io/[USERNAME]/webmention" />
+<link rel="pingback" href="https://webmention.io/[USERNAME]/xmlrpc" />
+```
+
+Navigating to one of these URLs you can see it is a simple form that will allow other sites, the ability to notify the site of a Webmention, or in the case of the second link the ability to use the old Pingback functionality with the newer Webmention standard.
+
+### Setting up Bridgy
+
+So I, like many create tweets about posts and projects I do on Twitter, so being able to gain insights into the chatter about this, would be very brilliant and that’s where [Bridgy](https://brid.gy/) comes in this will do all the scraping for you and post the relevant mentions off to your Webmention implementation. To do this all you need to do is sign in and authorise Bridgy to see your timeline and profile to be able to investigate the relevant posts. Bridgy will require you to also make sure that the website in question is linked in your Bios.
+
+Once set up you have the ability to see all the responses and manually crawl your currently logged in profile for any mentions, like in the example below.
+
+![Screenshot of the Brdgy Dashboard show controls to Poll websites, along with a table of results](https://cdn.sanity.io/images/airrvxef/production/f2c50aef4dd36c14d4c7ec9590ad375fb0f741c1-1272x522.png)
+
+## Outputting the data to your website
+
+For a basic output of all the mentions on one page (which is what I recommend to start with) I’ll point you to Monica’s section about implementing it into a React/Next.js site [here](https://aboutmonica.com/blog/getting-started-with-webmention-next-js/#fetching-and-rendering-webmentions), this does an awesome job of getting you up and running.
+
+Once I had implemented the above, I then had time to sit back and think of other possibilities and different techniques I could use.
+
+- Somehow tailor the output that I could display the Webmentions that relate to a certain page rather than just grabbing them all. - **Implemented**
+- Tailor the output further to separate the comments/chatter, likes and reposts so that I can visually represent them on the website.- **Implemented**
+- Or cache the output so that rather than pulling the mentions on the client side I could actually pull them and process them at build, or even Server Side Rendered. **- TODO**
+- and could I possibly store the mentions in a database for historical purposes. **- TODO**
+
+Now currently I’ve only implemented two of the following, but I do plan on adding or at least exploring the idea of the last two points above and maybe doing a follow up when I come to actually implement it.
+
+### Display mentions per page.
+
+So using the above I managed to get a basic list of mentions rendered to a page, but what about per page? I was thinking of all the ways I could go about this, the one I settled on is to create a separate effect file that I could then pass and optional parameter to that would allow me to go off and get all Webmentions for the entire site or go off and query just the URL in question.
+
+```typescript
+import { useEffect, useState } from "react";
+
+export const useWebMentions = (url?: string) => {
+	const [mentions, setMentions] = useState<any>(undefined);
+	useEffect(() => {
+		const wmUrl = "https://webmention.io/api/mentions.jf2?[USERNAME]&token=[TOKEN]";
+
+		// Check if the url has been passed, if so use as the target url otherwise get all mentions
+		const target = url ? `${wmUrl}&target=${url}` : wmUrl;
+
+		fetch(target)
+			.then((response) => response.json())
+			.then((mentions) => {
+				if (mentions.children) {
+					setMentions(mentions.children);
+				}
+			});
+	}, []);
+
+	return mentions;
+};
+```
+
+This allowed me to then use this in a component to just stick on every page I want to display Webmentions, now I know this is most efficient but as proof of concept, I think having it load on the client-side isn’t too bad, especially for me when this will be going on the bottom of log posts where it’ll be at the bottom of large pieces of content so by the time the user gets to it, it should have loaded.
+
+As for the component, I wanted to separate the likes and reposts from any mentions so I went ahead and tweaked the above code further.
+
+### Separate Likes, Reposts and Chatter
+
+I ended up producing something as followed, and again it’s not the most efficient, but it allowed me to quickly separate the comments out and give me that quick dopamine hit it being able to see the likes at a quick glance 😛
+
+![Example output of a custom webcomponents showing 7 likes along with avatars and 0 repost and 1 comment](https://cdn.sanity.io/images/airrvxef/production/5f5a034cae7efd0002fe25664bfdb4a92172bc1b-1187x569.png)
+
+To do this I create a new Component and altered the Effect hook slightly to allow me to better split the content out.
+
+```typescript
+import { useEffect, useState } from "react";
+
+export type WebMentionsCollection = {
+	likes: any;
+	reposts: any;
+	mentions: any;
+};
+
+export const useWebMentions = (url?: string): WebMentionsCollection => {
+	const [mentions, setMentions] = useState<WebMentionsCollection | undefined>(undefined);
+	useEffect(() => {
+		const wmUrl = "https://webmention.io/api/mentions.jf2?[USERNAME]&token=[TOKEN]";
+
+		// Check if the url has been passed, if so use as the target url otherwise get all mentions
+		const target = url ? `${wmUrl}&target=${url}` : wmUrl;
+
+		fetch(target)
+			.then((response) => response.json())
+			.then((mentions) => {
+				if (mentions.children) {
+					const mentionsWithoutLikeOrReposts = mentions.children.filter(
+						(mention) =>
+							mention["wm-property"] !== "like-of" && mention["wm-property"] !== "repost-of"
+					);
+					const totalLike = mentions.children.filter(
+						(mention) => mention["wm-property"] === "like-of"
+					);
+					const totalRepost = mentions.children.filter(
+						(mention) => mention["wm-property"] === "repost-of"
+					);
+
+					const webMentions: WebMentionsCollection = {
+						likes: totalLike,
+						reposts: totalRepost,
+						mentions: mentionsWithoutLikeOrReposts,
+					};
+					setMentions(webMentions);
+				}
+			});
+	}, []);
+
+	return mentions;
+};
+```
+
+Doing this allowed to pass and object back that had the `mentions`, `likes` and `reposts` to display separately, so the next step was to create a Component that allowed me to style and layout exactly as I wanted above.
+
+```tsx
+import { useWebMentions, WebMentionsCollection } from "../hooks/useWebMentions";
+import { stripDomainFromString } from "../helpers/TextHelpers";
+
+export default function WebMentions({ url, className }: { url?: string; className?: string }) {
+	const webMentions: WebMentionsCollection = useWebMentions(url);
+
+	const mentionTypes = {
+		"in-reply-to": "Replied",
+		"bookmark-of": "Bookmarked",
+		"mention-of": "Mentioned",
+		rsvp: "RSVPed",
+	};
+
+	if (webMentions) {
+		return (
+			<>
+				<div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
+					<div>
+						<span className="mb-4 flex flex-row">
+							<svg
+								className="text-red mr-2 h-6 w-6"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+								/>{" "}
+							</svg>
+							<p className="text-red">
+								<span className="text-white">Likes</span> {webMentions.likes.length}
+							</p>
+						</span>
+						<ul className="flex flex-row ">
+							{webMentions.likes.map((like, index) => (
+								<li className="mr-2" key={index}>
+									<a
+										target="_blank"
+										rel="noopener noreferrer"
+										href={like.author.url}
+										title={like.author.name}
+									>
+										<img
+											src={like.author.photo}
+											alt={`Avatar for ${like.author.name}`}
+											className={"border-red h-10 w-10  rounded-full border-2"}
+										/>
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+					<div>
+						<span className="mb-4 flex flex-row">
+							<svg
+								className="text-terminal-green h-6 w-6"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+								/>
+							</svg>
+							<p className="text-terminal-green ml-2">
+								<span className="text-white">Reposts</span> {webMentions.reposts.length}
+							</p>
+						</span>
+						<ul className="flex flex-row ">
+							{webMentions.reposts.map((like, index) => (
+								<li className="mr-2" key={index}>
+									<a
+										target="_blank"
+										rel="noopener noreferrer"
+										href={like.author.url}
+										title={like.author.name}
+									>
+										<img
+											src={like.author.photo}
+											alt={`Avatar for ${like.author.name}`}
+											className={"border-terminal-green h-10 w-10  rounded-full border-2"}
+										/>
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+				<div className={"mt-6"}>
+					<h4 className={"flex flex-row"}>
+						<svg
+							className="text-purple mr-2 h-6 w-6"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+							/>
+						</svg>{" "}
+						Mentions
+					</h4>
+					<ul className={"mt-4 flex flex-col "}>
+						{webMentions.mentions.map((mention, index) => (
+							<li
+								key={index}
+								className="bg-black-300 border-purple duration-400 mb-4 overflow-hidden rounded-lg border-4 px-4 py-5 shadow transition-all sm:p-6"
+							>
+								<span className="items item-center mb-6 flex flex-row align-middle">
+									<a
+										target="_blank"
+										rel="noopener noreferrer"
+										href={mention.author.url}
+										title={mention.author.name}
+									>
+										<img
+											src={mention.author.photo}
+											alt={`Avatar for ${mention.author.name}`}
+											className={"border-purple h-10 w-10 rounded-full border-2"}
+										/>
+									</a>
+									<p className="ml-2 self-center">
+										<a
+											target="_blank"
+											rel="noopener noreferrer"
+											href={mention.author.url}
+											title={mention.author.name}
+										>
+											{mention.author.name}
+										</a>{" "}
+										{mentionTypes[mention["wm-property"]]} on{" "}
+										<time className="font-bold">
+											{new Date(mention.published).toLocaleDateString(undefined, {
+												year: "numeric",
+												month: "short",
+												day: "numeric",
+											})}
+										</time>
+									</p>
+
+									<a
+										href={mention.url}
+										className="text-purple ml-4 self-center text-xs italic"
+										target="_blank"
+										rel="noopener noreferrer"
+										title="Original Source"
+									>
+										<svg
+											className="h-4 w-4"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+											xmlns="http://www.w3.org/2000/svg"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+											/>
+										</svg>
+									</a>
+								</span>
+								<div>
+									{mention.content ? <p className={"mb-6"}>"{mention.content.text}"</p> : null}
+
+									{!url ? (
+										<small className={"text-purple text-xs italic"}>
+											..about the page{" "}
+											<a target="_blank" rel="noopener noreferrer" href={mention["wm-target"]}>
+												{stripDomainFromString(mention["wm-target"])}
+											</a>
+										</small>
+									) : null}
+								</div>
+							</li>
+						))}
+					</ul>
+				</div>
+			</>
+		);
+	}
+	return <></>;
+}
+```
+
+Hopefully, this is pretty self-explanatory, There are a few bits here that I think would be good to explain further.
+
+```typescript
+const mentionTypes = {
+	"in-reply-to": "Replied",
+	"bookmark-of": "Bookmarked",
+	"mention-of": "Mentioned",
+	rsvp: "RSVPed",
+};
+```
+
+Even though we are handling Likes and Reposts, Webmentions can also be a variety of other types that I wanted to display in a list rather than just an avatar and a counter, the snippet above allowed me to create a lookup table that depending on the type I could display a readable format of what action a user had taken on the mention.
+
+The next bit I’d like to mention is the `stripDomainFromString` the function I used for the source URL. As I am displaying Webmentions on individual posts, but also as a collective on the [~/stats](https://deloughry.co.uk/stats) page I still wanted a way to associate a mention to a page so that the response didn’t get lost and you could always attribute it to a post. The payload that a Webmention sends across contains a `wm-target` attribute that contains the URL that is referenced in the Webmention.
+
+```json
+{
+	"type": "entry",
+	"author": {
+		"type": "card",
+		"name": "🧑‍⚕️_🦖🧨 - Matthew Peck-Deloughry",
+		"photo": "https://webmention.io/avatar/pbs.twimg.com/817f965c9121121359d91070628098de15e776dfd398fdd335411b37f521a043.jpg",
+		"url": "https://twitter.com/DR_DinoMight"
+	},
+	"url": "https://twitter.com/DR_DinoMight/status/1516891049842642948#favorited-by-9951422",
+	"published": null,
+	"wm-received": "2022-04-22T13:37:04Z",
+	"wm-id": 1384738,
+	"wm-source": "https://brid.gy/like/twitter/DR_DinoMight/1516891049842642948/9951422",
+	"wm-target": "https://deloughry.co.uk/logs/using-mongodb-s-data-api-next-js-with-swr-to-make-a-page-click-tracker",
+	"like-of": "https://deloughry.co.uk/logs/using-mongodb-s-data-api-next-js-with-swr-to-make-a-page-click-tracker",
+	"wm-property": "like-of",
+	"wm-private": false
+}
+```
+
+So taking this I decided if I just chop off the domain I could just output that URL to give some context and a link if people are interested in reading more.
+
+And the `stripDomainFromString` is a simple function that just removes the domain
+
+```typescript
+// Grab the path from the url string
+export const stripDomainFromString = (url: string) => {
+	return url.replace(/^https?:\/\/[^\/]+/, "");
+};
+```
+
+## Conclusion
+
+There you have it, this is how I implemented Webmentions on my website, I will be expanding this functionality as time goes on, as mentioned I’d love to store these in a Mongo DB to be able to store the interactions for prosperity's sake, but also as part of a way to make the webmentions get loaded at the server level to alleviate the load on the client.
+
+Another area that will be needed to be looked at some point and that's some form of pagination, [webmention.io](http://webmention.io) do offer some functionality for this in the form of tacking on by using the `per-page` and `page` API calls, this is something that I don’t really need just yet for my pokey lil’ site, but it is a bit of functionality that is better to have than not.
+
+Well, I hope you found this useful and as always if you’d like to discuss this hit me up on Twitter and maybe even reference this URL to use the lovely Webmention functionality 😀
