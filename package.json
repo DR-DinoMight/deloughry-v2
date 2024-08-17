@@ -48,7 +48,9 @@
 		"@img/sharp-win32-x64": "^0.33.1"
 	},
 	"dependencies": {
+    "@astrojs/check": "^0.5.9",
 		"@astrojs/netlify": "^4.0.1",
+		"@astrojs/node": "^8.3.3",
 		"@astrojs/prefetch": "^0.4.1",
 		"@astrojs/react": "^3.0.9",
 		"@astrojs/rss": "^4.0.1",
@@ -62,7 +64,7 @@
 		"@types/spotify-api": "^0.0.25",
 		"@vercel/analytics": "^1.2.2",
 		"@vercel/speed-insights": "^1.0.10",
-		"astro": "^4.0.8",
+		"astro": "^4.5.3",
 		"astro-compress": "^2.2.5",
 		"dotenv": "^16.3.1",
 		"emoji-unicode-map": "^1.1.11",

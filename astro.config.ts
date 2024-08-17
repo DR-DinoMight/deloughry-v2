@@ -4,14 +4,13 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import prefetch from "@astrojs/prefetch";
 import react from "@astrojs/react";
-import netlify from "@astrojs/netlify/functions";
+import node from "@astrojs/node";
+
 
 
 // https://astro.build/config
 import compress from "astro-compress";
 
-// https://astro.build/config
-import vercel from "@astrojs/vercel/serverless";
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,16 +23,14 @@ export default defineConfig({
   },
   output: "server",
   integrations: [mdx({}), tailwind({
-    config: {
       applyBaseStyles: false
-    }
   }), sitemap(), prefetch(), react(), compress()],
   vite: {
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"]
     }
   },
-  adapter: vercel({
-    webAnalytics: { enabled: true }
+  adapter: node({
+    mode: "standalone"
   })
 });
