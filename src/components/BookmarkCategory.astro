@@ -13,15 +13,36 @@ const { bookmarks, title } = Astro.props;
       return (
           <a href={bookmark.link} class="relative rounded-lg group">
             <div class="w-full aspect-w-16 aspect-h-9 overflow-hidden">
-              {bookmark.metadata && bookmark.metadata.ogImage && (
-                <Image
-                  src={bookmark.metadata.ogImage[0].url}
-                  alt={bookmark.metadata.ogImage[0]?.alt ?? bookmark.link}
-                  inferSize
-                  loading={'eager'}
-                  class="w-full  rounded-lg object-cover group-hover:opacity-70 transition-all group-hover:w-[110%]"
-                />)
-              }
+              {(() => {
+                try {
+                  if (bookmark.metadata && bookmark.metadata.ogImage) {
+                    return (
+                      <Image
+                        src={bookmark.metadata.ogImage[0].url}
+                        alt={bookmark.metadata.ogImage[0]?.alt ?? bookmark.link}
+                        width={1000}
+                        height={500}
+                        loading={'eager'}
+                        class="w-full rounded-lg object-cover group-hover:opacity-70 transition-all group-hover:w-[110%]"
+                      />
+                    );
+                  }
+                } catch (error) {
+                  console.error("Failed to load image:", error);
+                }
+
+                // Fallback to logo image if ogImage doesn't exist or fails to load
+                return (
+                  <Image
+                    src={logoImg}
+                    alt="A placeholder for site with no opengraph"
+                    width={logoImg.width}
+                    height={logoImg.height}
+                    loading={'eager'}
+                    class="w-full rounded-lg aspect-video object-scale-down group-hover:opacity-70 transition-all group-hover:w-[110%]"
+                  />
+                );
+              })()}
               {(!bookmark.metadata || !bookmark?.metadata?.ogImage) && (
                 <Image
                   src={logoImg}
