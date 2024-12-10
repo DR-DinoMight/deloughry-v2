@@ -1,0 +1,151 @@
+---
+title: "GCM-Gen: My New Git Commit Message Generator"
+publishDate: "10 December 2024"
+description: "Introducing GCM-Gen - a tool designed to help you generate meaningful commit messages quickly and easily, using AI to understand your code changes."
+tags: ["tool", "git", "AI", "development"]
+---
+
+![Animated vector graphic of a laptop with code](https://private-user-images.githubusercontent.com/74038190/241765440-80728820-e06b-4f96-9c9e-9df46f0cc0a5.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzM4NjU4MjgsIm5iZiI6MTczMzg2NTUyOCwicGF0aCI6Ii83NDAzODE5MC8yNDE3NjU0NDAtODA3Mjg4MjAtZTA2Yi00Zjk2LTljOWUtOWRmNDZmMGNjMGE1LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEyMTAlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMjEwVDIxMTg0OFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQwN2Y0ZDllMTZiMzZlNDVjMjkzNmExNWIzMjQ4NWQ1MmJjNTlhZDVmNjkzMWQzMGNlOWY4NmJiNzdjZjgzMjUmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.fbaP00bXq0DX507NjnIPiH16y4x2YUjWikuno9Y3Ecg)
+
+# GCM-Gen: My New Git Commit Message Generator
+
+
+First of all, wait what I'm doing here? I'm writing a blog post about my new tool? Checks previous blog post's date, oh right, I'm that late with my next blog post! Sssshhhh 🤫, don't tell anyone! Nervously looking around to see if anyone is watching me write this!
+
+![A nervous Andy Samberg in a suit and tie smiles nervously with shifty eyes, embodying a character from SNL.](https://media.giphy.com/media/3o7TKQ8kAP0f9X5PoY/giphy.gif "Andy Samberg in a suit and tie smiles nervously")
+
+Anyway, I've been working on a new tool for a while now, and I'm excited to finally share it with you. It's called **GCM-Gen** and it's a tool that helps you generate meaningful commit messages quickly and easily, using AI to understand your code changes.
+
+We’ve all been there. You’ve made some changes, and now it’s time to commit. But when it comes to writing the commit message... you freeze. You want it to be good, but your brain goes blank. That’s why I built **GCM-Gen**—a tool that helps you generate decent commit messages without the usual stress.
+
+It’s early days, and I’m still figuring out exactly what I want it to do. But for now, it’s designed to save you time, keep you consistent, and help you avoid those classic “What was I even thinking?” moments when you look back at your commit history.
+
+---
+
+#### Why GCM-Gen? Because We've All Seen (and Done) This...
+
+![A gif of the git logo](https://user-images.githubusercontent.com/74038190/212281775-b468df30-4edc-4bf8-a4ee-f52e1aaddc86.gif "the git logo")
+
+Let’s be real. We’ve all committed with terrible messages. Here's a couple of classics:
+
+- **"Fix stuff"**
+  What exactly was fixed? A typo? A bug? The whole app? This kind of message is a nightmare for anyone looking back at your commit history.
+
+- **"Update"**
+  Update what? The README? Some CSS? The database? The vagueness is just... not helpful.
+
+- **"Final commit"**
+  Please. We all know that’s never the final commit. Plus, it tells us nothing about what actually changed.
+
+That’s why I built GCM-Gen—to stop us from making the same mistakes over and over. It uses your `git diff` to look at the changes you’ve made and then generates a commit message using custom prompts. The goal is simple: save time and help you stay consistent without overthinking. Run the command and get on with being a kick-ass, awesome developer that we all know you are! (Even if your inner critic tries to tell you otherwise.)
+
+![A gif of a developer](https://media.giphy.com/media/cnhpl4IeYgU7MCBdV2/giphy.gif "A developer")
+
+---
+
+#### The Commands (And Why They’re Helpful)
+
+Here’s a rundown of the commands you’ll use with GCM-Gen. They’re all about making your commit message workflow smoother:
+
+1. **Generate a commit message**
+   If you just want a commit message based on your changes, run:
+   ```bash
+   gcm-gen g
+   ```
+   It looks at your `git diff` (the changes you’ve made) and generates a commit message for you. No more staring at the screen, wondering what to write.
+
+2. **Generate and commit in one go**
+   If you want to generate the message and commit it in one step, use:
+   ```bash
+   gcm-gen c
+   ```
+   This command generates the message and automatically commits your changes. Simple and effective.
+
+3. **Check your config**
+   To see your current settings, run:
+   ```bash
+   gcm-gen config
+   ```
+   This lets you know which AI provider you're using and your config setup.
+
+4. **Edit your config**
+   Want to tweak your settings? Run:
+   ```bash
+   gcm-gen config --edit
+   ```
+   This opens up your config file, where you can make changes like switching between ChatGPT and Ollama.
+
+---
+
+#### How It Works
+
+So, what’s going on behind the scenes? GCM-Gen uses **git diff** to look at your code changes and generates a commit message based on a custom prompt. This prompt guides the AI to produce a consistent, structured message, helping to make sure it follows the right format.
+
+For example, if you’re fixing a bug, you might get:
+```bash
+🐛 - Fix user authentication bug
+```
+
+Or if you're adding a new feature:
+```bash
+✨ - Add search functionality to dashboard
+```
+
+The idea is that you get useful, well-structured commit messages with minimal effort.
+
+---
+
+#### Why Both GPT and Ollama?
+
+You’ll notice that GCM-Gen lets you choose between two AI providers: **ChatGPT** and **Ollama**. I included both for a reason—there’s no one-size-fits-all solution.
+
+- **ChatGPT**: This is the go-to if you want high-quality, reliable commit messages. It’s fast, it’s accurate, and the results are generally top-notch. The catch is that you’ll need an OpenAI API key (and the usage comes with a cost).
+- **Ollama**: On the flip side, Ollama runs **locally**. This means no data goes to the cloud, which is great for privacy. It’s also **completely free** and doesn’t require an API key. The downside? It can be slower, and it might not always generate the same quality of messages as ChatGPT.
+
+The choice is yours. If you don’t mind paying for API calls and want the best possible messages, go for **ChatGPT**. If privacy or offline usage is more important, then **Ollama** is your best bet.
+
+---
+
+#### Requirements (Just A Few Things To Get Started)
+
+To run GCM-Gen, you’ll need a few basic things:
+
+- **PHP 8.1+**
+- **Composer**
+- **Git**
+
+If you want to use ChatGPT, you’ll need an **OpenAI API key**. For Ollama, you’ll need to install it locally. The detailed setup is in the [README](https://github.com/DR-DinoMight/gcm-gen/blob/main/README.md), but the basics are that simple.
+
+---
+
+#### What’s Next?
+
+Honestly, I’m still figuring out where I want to take this tool. It's early days, and I’ve got plenty of ideas for how to improve it. Right now, it’s all about making your commit message process faster and easier.
+
+If you’ve got ideas, feedback, or want to collaborate, feel free to reach out! You can find me on [Bluesky](https://bsky.app/profile/deloughry.co.uk) or drop an issue on [GitHub](https://github.com/DR-DinoMight/gcm-gen/issues).
+
+---
+
+#### How to Install
+
+You can install GCM-Gen via Composer with:
+
+```bash
+composer global require mdeloughry/gcm-gen
+```
+
+Then, just run:
+
+```bash
+gcm-gen g
+```
+
+And there you go—commit messages done in a flash.
+
+---
+
+#### Final Thoughts
+
+GCM-Gen is still in its early stages, but I’m excited to see where it goes. I hope it saves you some time and helps you stay consistent with your commit messages. It’s one small step towards better development practices, and hopefully, it’ll make your life a bit easier.
+
+Thanks for checking it out! And remember, if you have any thoughts, suggestions, or just want to chat, hit me up on [Bluesky](https://bsky.app/profile/deloughry.co.uk) or [GitHub Issues](https://github.com/DR-DinoMight/gcm-gen/issues). Let’s make this tool even better together!
