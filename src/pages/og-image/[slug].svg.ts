@@ -1,6 +1,6 @@
 import type { APIContext, GetStaticPathsResult } from "astro";
 import { getCollection, getEntryBySlug } from "astro:content";
-import satori, { SatoriOptions } from "satori";
+import satori from "satori";
 import { html } from "satori-html";
 import siteConfig from "@/site-config";
 import { getFormattedDate } from "@/utils";
@@ -13,7 +13,7 @@ const monoFontBold = await fetch(
 	"https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-800-normal.ttf"
 );
 
-const ogOptions: SatoriOptions = {
+const ogOptions = {
 	width: 1200,
 	height: 630,
 	// debug: true,
@@ -54,17 +54,18 @@ const markup = (title: string, pubDate: string) => html`<div
 	</div>
 </div>`;
 
-export async function get({ params: { slug } }: APIContext) {
+export async function GET({ params: { slug } }: APIContext) {
 	const post = await getEntryBySlug("post", slug!);
 	const title = post?.data.title ?? siteConfig.title;
 	const postDate = getFormattedDate(post?.data.publishDate ?? Date.now(), {
 		weekday: "long",
 	});
 	const svg = await satori(markup(title, postDate), ogOptions);
-	return {
-		body: svg,
-		encoding: "binary",
-	};
+	return new Response(svg, {
+		headers: {
+			"Content-Type": "image/svg+xml",
+		},
+	});
 }
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {

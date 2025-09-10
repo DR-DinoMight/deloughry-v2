@@ -25,6 +25,9 @@ export default defineConfig({
   integrations: [mdx({}), tailwind({
       applyBaseStyles: false
   }), sitemap(), prefetch(), react(), compress()],
+  experimental: {
+    csp: true
+  },
   vite: {
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"]

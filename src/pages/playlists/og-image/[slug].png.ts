@@ -1,5 +1,5 @@
 import type { APIContext, GetStaticPathsResult } from "astro";
-import satori, { SatoriOptions } from "satori";
+import satori from "satori";
 import { html } from "satori-html";
 import siteConfig from "@/site-config";
 import { getFormattedDate } from "@/utils";
@@ -16,7 +16,7 @@ const monoFontBold = await fetch(
   "https://api.fontsource.org/v1/fonts/jetbrains-mono/latin-800-normal.ttf"
 );
 
-const ogOptions: SatoriOptions = {
+const ogOptions = {
   width: 1200,
   height: 630,
   // debug: true,
@@ -61,12 +61,10 @@ const markup = (title: string, description: string, artwork?: string) => html`<d
 	</div>
 </div>`;
 
-export async function get({ params: { slug } }: APIContext) {
+export async function GET({ params: { slug } }: APIContext) {
   //check if slug is string if not bail
   if (typeof slug !== "string") {
-    return {
-      status: 404,
-    };
+    return new Response("Not Found", { status: 404 });
   }
 
   const playlist = await getPlaylistfromDB(slug);
@@ -75,10 +73,11 @@ export async function get({ params: { slug } }: APIContext) {
   //@ts-expect-error
   const svg = await satori(markup(parseString(title), parseString(playlist?.description), artwork), ogOptions);
   const png = new Resvg(svg).render().asPng();
-  return {
-    body: png,
-    encoding: "binary",
-  };
+  return new Response(png, {
+    headers: {
+      "Content-Type": "image/png",
+    },
+  });
 }
 
 function parseString(text: string): string {
