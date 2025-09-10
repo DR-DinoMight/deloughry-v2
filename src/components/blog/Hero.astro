@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { getTagSlug } from "../../utils/tags";
 
 interface Props {
 	content: CollectionEntry<"post">;
@@ -40,7 +41,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 					<a
 						class="cactus-link inline-block before:content-['#']"
 						aria-label={`View more blogs with the tag ${tag}`}
-						href={`/tags/${tag}`}
+						href={`/tags/${getTagSlug(tag)}`}
 					>
 						{tag}
 					</a>

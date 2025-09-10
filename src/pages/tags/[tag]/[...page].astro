@@ -5,17 +5,20 @@ import { getCollection } from "astro:content";
 import PageLayout from "@/layouts/Base";
 import PostPreview from "@/components/blog/PostPreview";
 import Pagination from "@/components/Paginator";
-import { getUniqueTags, sortMDByDate } from "@/utils";
+import { getUniqueTagsFromTags, sortMDByDate, formatTagForDisplay, getTagSlug } from "@/utils";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 	const allPosts = await getCollection("post");
 	const allPostsByDate = sortMDByDate(allPosts);
-	const uniqueTags = getUniqueTags(allPostsByDate);
+	const uniqueTags = getUniqueTagsFromTags(allPostsByDate.map(post => ({ tags: post.data.tags })));
 
 	return uniqueTags.flatMap((tag) => {
-		const filterPosts = allPostsByDate.filter((post) => post.data.tags?.includes(tag));
+		const normalizedTag = tag.toLowerCase().trim();
+		const filterPosts = allPostsByDate.filter((post) =>
+			post.data.tags?.some(postTag => postTag.toLowerCase().trim() === normalizedTag)
+		);
 		return paginate(filterPosts, {
-			params: { tag },
+			params: { tag: getTagSlug(tag) },
 			pageSize: 10,
 		});
 	});
@@ -26,11 +29,12 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const { tag } = Astro.params;
+const { tag: encodedTag } = Astro.params;
+const tag = encodedTag ? decodeURIComponent(encodedTag) : '';
 
 const meta = {
-	title: `Tag: ${tag}`,
-	description: `View all posts with the tag - ${tag}`,
+	title: `Tag: ${formatTagForDisplay(tag || '')}`,
+	description: `View all posts with the tag - ${formatTagForDisplay(tag || '')}`,
 };
 
 const paginationProps = {
@@ -53,7 +57,7 @@ export const prerender = true;
 <PageLayout meta={meta}>
 	<h1 class="title mb-6 flex items-center">
 		<a href="/tags/" class="text-accent sm:hover:underline">Tags</a><span class="ml-2 mr-3">→</span>
-		<span class="text-xl">#{tag}</span>
+		<span class="text-xl">#{formatTagForDisplay(tag || '')}</span>
 	</h1>
 	<section aria-label="Blog post list">
 		<ul class="space-y-8 text-left">

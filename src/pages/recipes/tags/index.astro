@@ -1,0 +1,206 @@
+---
+import PageLayout from "@/layouts/Base";
+import { getUniqueRecipeTagsWithCount, getTagsByCategory, formatTagForDisplay } from "../../../utils/tags";
+import { getAllRecipes } from "@/lib/recipes.data";
+
+const allRecipes = await getAllRecipes();
+const allTags = getUniqueRecipeTagsWithCount(allRecipes);
+const categorizedTags = getTagsByCategory(Object.keys(allTags));
+
+const meta = {
+	title: "Recipe Tags",
+	description: "Browse recipes by tags and categories",
+};
+export const prerender = true;
+---
+
+<PageLayout meta={meta}>
+	<div class="recipe-tags-page">
+		<header class="recipe-tags-header">
+			<h1 class="recipe-tags-title">Recipe Tags</h1>
+			<p class="recipe-tags-subtitle">Browse recipes by tags and categories</p>
+		</header>
+
+		<!-- All Tags Section -->
+		<section class="all-tags-section">
+			<h2 class="section-title">All Tags</h2>
+			<div class="tags-grid">
+				{Object.entries(allTags).map(([tag, count]: [string, number]) => (
+					<article class="tag-card">
+						<a
+							href={`/recipes/tags/${tag}`}
+							title={`View recipes with the tag: ${formatTagForDisplay(tag)}`}
+							rel="prefetch"
+							class="tag-link"
+						>
+							<h3 class="tag-name">#{formatTagForDisplay(tag)}</h3>
+							<p class="tag-count">
+								{count} Recipe{count > 1 ? "s" : ""}
+							</p>
+						</a>
+					</article>
+				))}
+			</div>
+		</section>
+
+		<!-- Categorized Tags -->
+		{Object.keys(categorizedTags).length > 0 && (
+			<section class="categorized-tags-section">
+				<h2 class="section-title">Categories</h2>
+				{Object.entries(categorizedTags).map(([category, tags]: [string, string[]]) => (
+					<div class="category-section">
+						<h3 class="category-title">{formatTagForDisplay(category)}</h3>
+						<div class="category-tags">
+							{tags.map((tag) => (
+								<a
+									href={`/recipes/tags/${tag}`}
+									class="category-tag"
+									title={`View ${formatTagForDisplay(tag)} recipes`}
+								>
+									{formatTagForDisplay(tag)}
+									<span class="tag-count-small">({allTags[tag]})</span>
+								</a>
+							))}
+						</div>
+					</div>
+				))}
+			</section>
+		)}
+	</div>
+
+	<style>
+		.recipe-tags-page {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 2rem 1rem;
+		}
+
+		.recipe-tags-header {
+			text-align: center;
+			margin-bottom: 3rem;
+		}
+
+		.recipe-tags-title {
+			font-size: 2.5rem;
+			font-weight: 700;
+			color: var(--color-text);
+			margin-bottom: 0.5rem;
+		}
+
+		.recipe-tags-subtitle {
+			font-size: 1.125rem;
+			color: var(--color-text-secondary);
+		}
+
+		.section-title {
+			font-size: 1.875rem;
+			font-weight: 600;
+			color: var(--color-text);
+			margin-bottom: 1.5rem;
+			border-bottom: 2px solid var(--color-accent);
+			padding-bottom: 0.5rem;
+		}
+
+		.tags-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+			gap: 1rem;
+			margin-bottom: 3rem;
+		}
+
+		.tag-card {
+			background: var(--color-bg-secondary);
+			border-radius: 0.75rem;
+			overflow: hidden;
+			transition: all 0.2s ease;
+			border: 1px solid var(--color-border);
+		}
+
+		.tag-card:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+		}
+
+		.tag-link {
+			display: block;
+			padding: 1.5rem;
+			text-decoration: none;
+			color: inherit;
+		}
+
+		.tag-name {
+			font-size: 1.125rem;
+			font-weight: 600;
+			color: var(--color-accent);
+			margin-bottom: 0.5rem;
+		}
+
+		.tag-count {
+			font-size: 0.875rem;
+			color: var(--color-text-secondary);
+			margin: 0;
+		}
+
+		.categorized-tags-section {
+			margin-top: 3rem;
+		}
+
+		.category-section {
+			margin-bottom: 2rem;
+		}
+
+		.category-title {
+			font-size: 1.25rem;
+			font-weight: 600;
+			color: var(--color-text);
+			margin-bottom: 1rem;
+			text-transform: capitalize;
+		}
+
+		.category-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+
+		.category-tag {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.25rem;
+			padding: 0.5rem 1rem;
+			background: var(--color-bg-secondary);
+			border: 1px solid var(--color-border);
+			border-radius: 2rem;
+			text-decoration: none;
+			color: var(--color-text);
+			font-size: 0.875rem;
+			transition: all 0.2s ease;
+		}
+
+		.category-tag:hover {
+			background: var(--color-accent);
+			color: white;
+			transform: translateY(-1px);
+		}
+
+		.tag-count-small {
+			font-size: 0.75rem;
+			opacity: 0.7;
+		}
+
+		@media (max-width: 768px) {
+			.tags-grid {
+				grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+				gap: 0.75rem;
+			}
+
+			.tag-card {
+				padding: 1rem;
+			}
+
+			.recipe-tags-title {
+				font-size: 2rem;
+			}
+		}
+	</style>
+</PageLayout>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/Base.astro';
+const meta = { title: 'Shopping list', description: 'Your saved ingredients' };
+---
+
+<BaseLayout meta={meta}>
+	<section>
+		<h1>Shopping list</h1>
+		<ul id="items"></ul>
+		<div class="actions">
+			<button id="clear">Clear</button>
+			<button id="copy">Copy to clipboard</button>
+		</div>
+	</section>
+
+	<script type="module">
+		function render() {
+			const items = JSON.parse(localStorage.getItem('shopping-list') || '[]');
+			const list = document.getElementById('items');
+			list.innerHTML = items
+				.map((t, i) => `<li><label><input type="checkbox" data-i="${i}"/> ${t}</label></li>`)
+				.join('');
+			list.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+				cb.addEventListener('change', (e) => {
+					const target = e.target || e.srcElement;
+					const ds = target && target.dataset ? target.dataset : {};
+					const idx = Number(ds.i || 0);
+					const arr = JSON.parse(localStorage.getItem('shopping-list') || '[]');
+					arr.splice(idx, 1);
+					localStorage.setItem('shopping-list', JSON.stringify(arr));
+					render();
+				});
+			});
+		}
+		document.getElementById('clear').addEventListener('click', () => {
+			localStorage.removeItem('shopping-list');
+			render();
+		});
+		document.getElementById('copy').addEventListener('click', async () => {
+			const items = JSON.parse(localStorage.getItem('shopping-list') || '[]');
+			await navigator.clipboard.writeText(items.join('\n'));
+			alert('Copied');
+		});
+		render();
+	</script>
+
+	<style>
+		.actions { margin-top: 1rem; display: flex; gap: .5rem; }
+		@media print { #clear, #copy { display: none; } }
+	</style>
+</BaseLayout>
+
+

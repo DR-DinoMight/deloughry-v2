@@ -10,7 +10,8 @@
 		"sync": "astro sync",
 		"build": "prisma generate && astro build",
 		"preview": "astro preview",
-		"format": "prettier -w ./src ./src/**/*.astro"
+		"format": "prettier -w ./src ./src/**/*.astro",
+		"validate:recipes": "node -e \"(async()=>{const {readdirSync,readFileSync}=await import('fs');const Cook=await import('cooklang');let ok=true;for(const f of readdirSync('src/recipes')){if(!f.endsWith('.cook')) continue;const raw=readFileSync('src/recipes/'+f,'utf8');try{(Cook as any).parse? (Cook as any).parse(raw) : (Cook as any)(raw);}catch(e){console.error('Invalid recipe:',f);console.error(e.message||e);ok=false;}}if(!ok) process.exit(1);else console.log('All recipes valid');})()\""
 	},
 	"devDependencies": {
 		"@astrojs/mdx": "^4.3.5",
@@ -20,6 +21,7 @@
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/line-clamp": "^0.4.4",
 		"@tailwindcss/typography": "^0.5.10",
+		"@types/convert-units": "^2.3.12",
 		"@types/eslint": "^8.56.0",
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/prettier": "^2.7.3",
@@ -65,8 +67,11 @@
 		"@vercel/speed-insights": "^1.0.10",
 		"astro": "^5.13.6",
 		"astro-compress": "^2.2.5",
+		"convert-units": "^2.3.4",
+		"cooklang": "^0.3.0",
 		"dotenv": "^16.3.1",
 		"emoji-unicode-map": "^1.1.11",
+		"fuse.js": "^7.1.0",
 		"jsdom": "^23.0.1",
 		"jsonwebtoken": "^9.0.2",
 		"node-fetch": "^3.3.2",

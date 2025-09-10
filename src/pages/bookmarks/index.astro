@@ -13,7 +13,7 @@ const meta = {
 // foreach bookmark get the url go get the opengraph data
 
 const bookmarksWithMetadata =  await Promise.all(
-  bookmarks.map(async bookmark => {
+  bookmarks.map(async (bookmark: any) => {
     const results = await ogFetcher(bookmark['link']);
     return {
       ...bookmark,
@@ -47,53 +47,193 @@ export const prerender = true
 	observer.observe(targetHeader);
 </script>
 <PageLayout meta={meta}>
-  <div class="sm:grid sm:grid-flow-col sm:grid-cols-[5fr] sm:items-start sm:gap-x-10">
-    <article class="h-entry break-words">
-      <h1 class="title mb-8 sm:mb-6" id="heading">Bookmarks I find fun, useful, or just more people need to see...</h1>
-      {usefulBookmarks && (<BookmarkCategory title="Useful" bookmarks={usefulBookmarks} />)}
-      {funBookmarks.length > 0 && (<BookmarkCategory title="Fun" bookmarks={funBookmarks} />)}
-      {affiliateBookmarks.length > 0 && (<BookmarkCategory title="Affiliate" bookmarks={affiliateBookmarks} />)}
-    </article>
-    <aside class="hidden text-right sm:sticky sm:top-20 sm:block">
-			<h2 class="font-semibold">Table of Contents</h2>
-			<ul class="mt-4 space-y-5 text-xs">
-				{
-          <li class="line-clamp-2 text-accent hover:text-link font-oswald font-bold uppercase">
-            <a href="#useful" aria-label={`Scroll to section: useful`}>
+  <div class="bookmarks-page">
+    <header class="bookmarks-header">
+      <h1 class="bookmarks-title" id="heading">Bookmarks</h1>
+      <p class="bookmarks-subtitle">I find fun, useful, or just more people need to see...</p>
+    </header>
+
+    <div class="bookmarks-content">
+      <main class="bookmarks-main">
+        {usefulBookmarks && (<BookmarkCategory title="Useful" bookmarks={usefulBookmarks} />)}
+        {funBookmarks.length > 0 && (<BookmarkCategory title="Fun" bookmarks={funBookmarks} />)}
+        {affiliateBookmarks.length > 0 && (<BookmarkCategory title="Affiliate" bookmarks={affiliateBookmarks} />)}
+      </main>
+
+      <aside class="bookmarks-toc">
+        <h2 class="toc-title">Table of Contents</h2>
+        <ul class="toc-list">
+          <li class="toc-item">
+            <a href="#useful" aria-label="Scroll to section: useful">
               # useful
             </a>
           </li>
-          <li class="line-clamp-2 text-accent hover:text-link font-oswald font-bold uppercase">
-            <a href="#fun" aria-label={`Scroll to section: fun`}>
+          <li class="toc-item">
+            <a href="#fun" aria-label="Scroll to section: fun">
               # fun
             </a>
           </li>
-          <li class="line-clamp-2 text-accent hover:text-link font-oswald font-bold uppercase">
-            <a href="#affiliate" aria-label={`Scroll to section: affiliate`}>
+          <li class="toc-item">
+            <a href="#affiliate" aria-label="Scroll to section: affiliate">
               # affiliate
             </a>
           </li>
-				}
-			</ul>
-		</aside>
-  </div>
-  <button
-  id="to-top-btn"
-  class="z-90 fixed bottom-8 right-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:right-8 sm:h-12 sm:w-12"
-  aria-label="Back to Top"
-  data-show="false"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="2"
-      stroke="currentColor"
-      class="h-6 w-6"
+        </ul>
+      </aside>
+    </div>
+
+    <button
+      id="to-top-btn"
+      class="scroll-to-top"
+      aria-label="Back to Top"
+      data-show="false"
     >
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
-    </svg>
-  </button>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        focusable="false"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        class="h-6 w-6"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+      </svg>
+    </button>
+  </div>
+
+  <style>
+    .bookmarks-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .bookmarks-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .bookmarks-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--theme-text);
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .bookmarks-subtitle {
+      font-size: 1.2rem;
+      color: var(--theme-quote);
+      font-style: italic;
+    }
+
+    .bookmarks-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 3rem;
+    }
+
+    .bookmarks-main {
+      min-width: 0;
+    }
+
+    .bookmarks-toc {
+      position: sticky;
+      top: 2rem;
+      height: fit-content;
+    }
+
+    .toc-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--theme-accent);
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .toc-item a {
+      display: block;
+      padding: 0.5rem;
+      color: var(--theme-text);
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+    }
+
+    .toc-item a:hover {
+      background: rgba(175, 180, 200, 0.1);
+      color: var(--theme-accent);
+    }
+
+    .scroll-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 3rem;
+      height: 3rem;
+      background: var(--theme-accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(100px);
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .scroll-to-top[data-show="true"] {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .scroll-to-top:hover {
+      background: var(--theme-accent-hover);
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 1024px) {
+      .bookmarks-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .bookmarks-toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .bookmarks-page {
+        padding: 1rem;
+      }
+
+      .bookmarks-title {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </PageLayout>

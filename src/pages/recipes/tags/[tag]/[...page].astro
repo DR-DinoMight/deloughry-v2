@@ -1,0 +1,345 @@
+---
+import type { GetStaticPathsOptions, Page } from "astro";
+import PageLayout from "@/layouts/Base";
+import { getRecipesByTag, formatTagForDisplay, getTagSlug } from "../../../../utils/tags";
+import { getAllRecipes } from "@/lib/recipes.data";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+	const allRecipes = await getAllRecipes();
+	const uniqueTags = [...new Set(allRecipes.flatMap(recipe => recipe.tags))];
+
+	return uniqueTags.flatMap((tag) => {
+		const filteredRecipes = getRecipesByTag(allRecipes, tag);
+		return paginate(filteredRecipes, {
+			params: { tag },
+			pageSize: 6,
+		});
+	});
+}
+
+interface Props {
+	page: Page<any>;
+}
+
+const { page } = Astro.props;
+const { tag } = Astro.params;
+
+const meta = {
+	title: `Recipe Tag: ${formatTagForDisplay(tag || '')}`,
+	description: `View all recipes with the tag - ${formatTagForDisplay(tag || '')}`,
+};
+
+const paginationProps = {
+	...(page.url.prev && {
+		prevUrl: {
+			url: page.url.prev,
+			text: `← Previous Recipes`,
+		},
+	}),
+	...(page.url.next && {
+		nextUrl: {
+			url: page.url.next,
+			text: `Next Recipes →`,
+		},
+	}),
+};
+
+export const prerender = true;
+---
+
+<PageLayout meta={meta}>
+	<div class="recipe-tag-page">
+		<header class="recipe-tag-header">
+			<nav class="breadcrumb">
+				<a href="/recipes/" class="breadcrumb-link">Recipes</a>
+				<span class="breadcrumb-separator">→</span>
+				<a href="/recipes/tags/" class="breadcrumb-link">Tags</a>
+				<span class="breadcrumb-separator">→</span>
+				<span class="breadcrumb-current">#{formatTagForDisplay(tag || '')}</span>
+			</nav>
+
+			<h1 class="recipe-tag-title">
+				#{formatTagForDisplay(tag || '')} Recipes
+			</h1>
+			<p class="recipe-tag-subtitle">
+				{page.data.length} recipe{page.data.length !== 1 ? 's' : ''} found
+			</p>
+		</header>
+
+		<section class="recipes-grid" aria-label="Recipe list">
+			{page.data.map((recipe) => (
+				<article class="recipe-card">
+					{recipe.image && (
+						<div class="recipe-card-image">
+							<img src={recipe.image} alt={recipe.title} />
+						</div>
+					)}
+					<div class="recipe-card-content">
+						<h2 class="recipe-card-title">
+							<a href={`/recipes/${recipe.slug}/`}>{recipe.title}</a>
+						</h2>
+						{recipe.description && <p class="recipe-card-description">{recipe.description}</p>}
+						{recipe.tags.length ? (
+							<div class="recipe-card-tags">
+								{recipe.tags.map((recipeTag: string) => (
+									<a
+										href={`/recipes/tags/${getTagSlug(recipeTag)}`}
+										class={`tag ${recipeTag.toLowerCase() === tag.toLowerCase() ? 'active' : ''}`}
+										title={`View recipes with tag: ${formatTagForDisplay(recipeTag)}`}
+									>
+										{formatTagForDisplay(recipeTag)}
+									</a>
+								))}
+							</div>
+						) : null}
+						{recipe.servings && (
+							<div class="recipe-card-meta">
+								<span class="servings">{recipe.servings} servings</span>
+							</div>
+						)}
+					</div>
+				</article>
+			))}
+		</section>
+
+		{/* Pagination would go here if needed */}
+		{page.url.prev || page.url.next ? (
+			<nav class="pagination" aria-label="Recipe pagination">
+				{paginationProps.prevUrl && (
+					<a href={paginationProps.prevUrl.url} class="pagination-link pagination-prev">
+						{paginationProps.prevUrl.text}
+					</a>
+				)}
+				{paginationProps.nextUrl && (
+					<a href={paginationProps.nextUrl.url} class="pagination-link pagination-next">
+						{paginationProps.nextUrl.text}
+					</a>
+				)}
+			</nav>
+		) : null}
+	</div>
+
+	<style>
+		.recipe-tag-page {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 2rem 1rem;
+		}
+
+		.recipe-tag-header {
+			margin-bottom: 3rem;
+		}
+
+		.breadcrumb {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin-bottom: 1rem;
+			font-size: 0.875rem;
+		}
+
+		.breadcrumb-link {
+			color: var(--color-accent);
+			text-decoration: none;
+			transition: color 0.2s ease;
+		}
+
+		.breadcrumb-link:hover {
+			text-decoration: underline;
+		}
+
+		.breadcrumb-separator {
+			color: var(--color-text-secondary);
+		}
+
+		.breadcrumb-current {
+			color: var(--color-text);
+			font-weight: 500;
+		}
+
+		.recipe-tag-title {
+			font-size: 2.5rem;
+			font-weight: 700;
+			color: var(--color-text);
+			margin-bottom: 0.5rem;
+		}
+
+		.recipe-tag-subtitle {
+			font-size: 1.125rem;
+			color: var(--color-text-secondary);
+			margin: 0;
+		}
+
+		.recipes-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+			gap: 2rem;
+			margin-bottom: 3rem;
+		}
+
+		.recipe-card {
+			background: var(--theme-bg);
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.recipe-card:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+		}
+
+		.recipe-card-image {
+			position: relative;
+			overflow: hidden;
+			height: 200px;
+		}
+
+		.recipe-card-image img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			filter: grayscale(100%);
+			transition: filter 0.3s ease;
+		}
+
+		.recipe-card:hover .recipe-card-image img {
+			filter: grayscale(0%);
+		}
+
+		.recipe-card-content {
+			padding: 1.5rem;
+		}
+
+		.recipe-card-title {
+			margin: 0 0 0.75rem 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+			font-family: 'Oswald', sans-serif;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.recipe-card-title a {
+			color: var(--theme-text);
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
+
+		.recipe-card-title a:hover {
+			color: var(--theme-accent);
+		}
+
+		.recipe-card-description {
+			margin: 0 0 1rem 0;
+			color: var(--theme-quote);
+			font-style: italic;
+			line-height: 1.5;
+		}
+
+		.recipe-card-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-bottom: 1rem;
+		}
+
+		.tag {
+			background: var(--theme-accent);
+			color: white;
+			padding: 0.25rem 0.75rem;
+			border-radius: 20px;
+			font-size: 0.9rem;
+			font-weight: 500;
+			text-decoration: none;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+		}
+
+		.tag:hover {
+			background: var(--theme-accent-dark, #1a4d3a);
+			transform: translateY(-1px);
+		}
+
+		.tag.active {
+			background: var(--theme-quote);
+		}
+
+		.recipe-card-meta {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+		}
+
+		.servings {
+			color: var(--theme-accent);
+			font-weight: 600;
+			font-size: 0.9rem;
+		}
+
+		.pagination {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 3rem;
+			padding-top: 2rem;
+			border-top: 1px solid var(--color-border);
+		}
+
+		.pagination-link {
+			display: inline-flex;
+			align-items: center;
+			padding: 0.75rem 1.5rem;
+			background: var(--color-bg-secondary);
+			border: 1px solid var(--color-border);
+			border-radius: 0.5rem;
+			text-decoration: none;
+			color: var(--color-text);
+			font-weight: 500;
+			transition: all 0.2s ease;
+		}
+
+		.pagination-link:hover {
+			background: var(--color-accent);
+			color: white;
+			transform: translateY(-1px);
+		}
+
+		.pagination-prev {
+			margin-right: auto;
+		}
+
+		.pagination-next {
+			margin-left: auto;
+		}
+
+		@media (max-width: 768px) {
+			.recipe-tag-page {
+				padding: 1rem;
+			}
+
+			.recipe-tag-title {
+				font-size: 2rem;
+			}
+
+			.recipes-grid {
+				grid-template-columns: 1fr;
+				gap: 1.5rem;
+			}
+
+			.recipe-card-content {
+				padding: 1rem;
+			}
+
+			.pagination {
+				flex-direction: column;
+				gap: 1rem;
+			}
+
+			.pagination-prev,
+			.pagination-next {
+				margin: 0;
+			}
+		}
+	</style>
+</PageLayout>

@@ -1,0 +1,312 @@
+---
+import type { GetStaticPathsOptions, Page } from "astro";
+import PageLayout from "@/layouts/Base";
+import { getAllProjects } from "@/lib/projects.data";
+import { getUniqueTagsFromTags, getTagSlug, formatTagForDisplay } from "@/utils";
+import type { Project } from "@/lib/projects.data";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+	const allProjects = await getAllProjects();
+	const uniqueTags = getUniqueTagsFromTags(allProjects);
+
+	return uniqueTags.flatMap((tag) => {
+		const normalizedTag = tag.toLowerCase().trim();
+		const filteredProjects = allProjects.filter((project) =>
+			project.tags.some(projectTag => projectTag.toLowerCase().trim() === normalizedTag)
+		);
+		return paginate(filteredProjects, {
+			params: { tag: getTagSlug(tag) },
+			pageSize: 10,
+		});
+	});
+}
+
+interface Props {
+	page: Page<Project>;
+}
+
+const { page } = Astro.props;
+const { tag: encodedTag } = Astro.params;
+const tag = encodedTag ? decodeURIComponent(encodedTag) : '';
+
+const meta = {
+	title: `Project Tag: ${formatTagForDisplay(tag || '')}`,
+	description: `View all projects with the tag - ${formatTagForDisplay(tag || '')}`,
+};
+
+export const prerender = true;
+---
+
+<PageLayout meta={meta}>
+	<div class="project-tag-page">
+		<header class="project-tag-header">
+			<h1 class="project-tag-title">
+				<a href="/projects/tags/" class="breadcrumb-link">Project Tags</a>
+				<span class="breadcrumb-separator">→</span>
+				<span class="current-tag">#{formatTagForDisplay(tag || '')}</span>
+			</h1>
+		</header>
+
+		<div class="projects-grid">
+			{page.data.map((project) => (
+				<article class="project-card">
+					<div class="project-content">
+						<h2 class="project-title">
+						<a
+							href={project.url || `/projects/${project.slug}`}
+							{...(project.url ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+						>
+								{project.title}
+							</a>
+						</h2>
+						<p class="project-description">{project.description}</p>
+						<div class="project-meta">
+							<span class="project-category">{formatTagForDisplay(project.category)}</span>
+							<span class="project-status">{formatTagForDisplay(project.status)}</span>
+						</div>
+						{project.tags && project.tags.length > 0 && (
+							<div class="project-tags">
+								{project.tags.map((projectTag: string) => (
+									<a
+										href={`/projects/tags/${getTagSlug(projectTag)}`}
+										class={`project-tag ${projectTag.toLowerCase() === tag.toLowerCase() ? 'active' : ''}`}
+										title={`View projects with tag: ${formatTagForDisplay(projectTag)}`}
+									>
+										{formatTagForDisplay(projectTag)}
+									</a>
+								))}
+							</div>
+						)}
+						{project.technologies && project.technologies.length > 0 && (
+							<div class="project-technologies">
+								{project.technologies.map((tech: string) => (
+									<span class="technology-tag">{tech}</span>
+								))}
+							</div>
+						)}
+					</div>
+				</article>
+			))}
+		</div>
+
+		{page.url.prev || page.url.next ? (
+			<div class="pagination">
+				{page.url.prev && (
+					<a href={page.url.prev} class="pagination-link prev">
+						← Previous Projects
+					</a>
+				)}
+				{page.url.next && (
+					<a href={page.url.next} class="pagination-link next">
+						Next Projects →
+					</a>
+				)}
+			</div>
+		) : null}
+	</div>
+
+	<style>
+		.project-tag-page {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 2rem;
+		}
+
+		.project-tag-header {
+			margin-bottom: 3rem;
+		}
+
+		.project-tag-title {
+			font-size: 2rem;
+			font-weight: 600;
+			color: var(--theme-text);
+			font-family: 'Oswald', sans-serif;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.breadcrumb-link {
+			color: var(--theme-accent);
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
+
+		.breadcrumb-link:hover {
+			text-decoration: underline;
+		}
+
+		.breadcrumb-separator {
+			color: var(--theme-quote);
+		}
+
+		.current-tag {
+			color: var(--theme-text);
+		}
+
+		.projects-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+			gap: 2rem;
+			margin-bottom: 3rem;
+		}
+
+		.project-card {
+			background: var(--theme-bg);
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.project-card:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+		}
+
+		.project-content {
+			padding: 2rem;
+		}
+
+		.project-title {
+			margin: 0 0 1rem 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+			font-family: 'Oswald', sans-serif;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.project-title a {
+			color: var(--theme-text);
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
+
+		.project-title a:hover {
+			color: var(--theme-accent);
+		}
+
+		.project-description {
+			margin: 0 0 1.5rem 0;
+			color: var(--theme-quote);
+			font-style: italic;
+			line-height: 1.5;
+		}
+
+		.project-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-bottom: 1rem;
+		}
+
+		.project-category {
+			background: var(--theme-accent);
+			color: white;
+			padding: 0.25rem 0.75rem;
+			border-radius: 20px;
+			font-size: 0.9rem;
+			font-weight: 500;
+		}
+
+		.project-status {
+			background: var(--theme-quote);
+			color: white;
+			padding: 0.25rem 0.75rem;
+			border-radius: 20px;
+			font-size: 0.9rem;
+			font-weight: 500;
+		}
+
+		.project-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-bottom: 1rem;
+		}
+
+		.project-tag {
+			background: var(--theme-accent);
+			color: white;
+			padding: 0.25rem 0.75rem;
+			border-radius: 20px;
+			font-size: 0.9rem;
+			font-weight: 500;
+			text-decoration: none;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+		}
+
+		.project-tag:hover {
+			background: var(--theme-accent-dark, #1a4d3a);
+			transform: translateY(-1px);
+		}
+
+		.project-tag.active {
+			background: var(--theme-quote);
+		}
+
+		.project-technologies {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+
+		.technology-tag {
+			background: var(--theme-bg);
+			color: var(--theme-text);
+			padding: 0.25rem 0.75rem;
+			border-radius: 20px;
+			font-size: 0.8rem;
+			font-weight: 500;
+			border: 1px solid var(--theme-accent);
+		}
+
+		.pagination {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 3rem;
+		}
+
+		.pagination-link {
+			padding: 0.75rem 1.5rem;
+			background: var(--theme-accent);
+			color: white;
+			text-decoration: none;
+			border-radius: 8px;
+			font-weight: 500;
+			transition: background-color 0.3s ease;
+		}
+
+		.pagination-link:hover {
+			background: var(--theme-accent-dark, #1a4d3a);
+		}
+
+		@media (max-width: 768px) {
+			.project-tag-page {
+				padding: 1rem;
+			}
+
+			.project-tag-title {
+				font-size: 1.5rem;
+			}
+
+			.projects-grid {
+				grid-template-columns: 1fr;
+				gap: 1.5rem;
+			}
+
+			.project-content {
+				padding: 1.5rem;
+			}
+
+			.pagination {
+				flex-direction: column;
+				gap: 1rem;
+			}
+		}
+	</style>
+</PageLayout>

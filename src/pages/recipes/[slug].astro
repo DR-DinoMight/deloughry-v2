@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/Base.astro';
+import RecipeView from '../../components/recipes/RecipeView';
+import RecipeSchema from '../../components/recipes/RecipeSchema';
+import { getRecipe } from '../../lib/recipes.data';
+
+export async function getStaticPaths() {
+	const { getAllRecipes } = await import('../../lib/recipes.data');
+	const all = await getAllRecipes();
+	return all.map((r) => ({ params: { slug: r.slug } }));
+}
+
+const { slug } = Astro.params;
+const recipe = await getRecipe(slug!);
+if (!recipe) {
+	return Astro.redirect('/recipes/');
+}
+const meta = {
+	title: recipe.title,
+	...(recipe.description ? { description: recipe.description } : {}),
+	...(recipe.image ? { ogImage: recipe.image } : {}),
+};
+---
+
+<BaseLayout meta={meta}>
+	<RecipeSchema recipe={recipe} />
+	<RecipeView client:load recipe={recipe} />
+	<link rel="stylesheet" href="/src/styles/recipe-book.css" />
+</BaseLayout>
+
+

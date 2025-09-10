@@ -1,34 +1,221 @@
 ---
 import PageLayout from "@/layouts/Base";
+import { getAllProjects } from "@/lib/projects.data";
+import { getTagSlug, formatTagForDisplay } from "@/utils";
+
+const projects = await getAllProjects();
 
 const meta = {
   title: "Projects",
-  description: "",
+  description: "A collection of tools, experiments, and work in progress",
 };
 export const prerender = true;
 ---
 
 <PageLayout meta={meta}>
-  <div class="space-y-6">
-    <h1 class="title">Projects</h1>
+  <div class="projects-page">
+    <header class="projects-header">
+      <h1 class="projects-title">Projects</h1>
+      <p class="projects-subtitle">A collection of tools, experiments, and work in progress</p>
+    </header>
 
-    <h2>Fun Tools</h2>
-    <ul class="list-inside list-disc">
-      <li class="list-item">
-        <a href="https://nhs-number-gen.m4p.uk/" target="_blank" class="cactus-link mx-4 my-4 sm:py-0">NHS Number Generator and Validator</a>
-      </li>
-      <li class="list-item">
-        <a href="https://blosm.m4p.uk/" target="_blank" class="cactus-link mx-4 my-4 sm:py-0">BLOSM Studio Latest Temps</a>
-      </li>
-      <li class="list-item">
-        <a href="https://globe.m4p.uk/" target="_blank" class="cactus-link mx-4 my-4 sm:py-0">Twitch Globe</a>
-      </li>
-    </ul>
-    <h2>Work in Progress</h2>
-    <ul class="list-inside list-disc">
-      <li class="list-item">
-        <a href="/projects/gol" class="cactus-link mx-4 my-4 sm:py-0">Game of life</a>
-      </li>
-    </ul>
+    <div class="projects-grid">
+      {projects.map((project) => (
+        <article class="project-card">
+          <div class="project-content">
+            <h3 class="project-title">
+              <a
+                href={project.url || `/projects/${project.slug}`}
+                {...(project.url ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              >
+                {project.title}
+              </a>
+            </h3>
+            <p class="project-description">{project.description}</p>
+            <div class="project-meta">
+              <span class="project-category">{formatTagForDisplay(project.category)}</span>
+              <span class="project-status">{formatTagForDisplay(project.status)}</span>
+            </div>
+            {project.tags && project.tags.length > 0 && (
+              <div class="project-tags">
+                {project.tags.map((tag) => (
+                  <a href={`/projects/tags/${getTagSlug(tag)}`} class="project-tag" title={`View projects with tag: ${formatTagForDisplay(tag)}`}>
+                    {formatTagForDisplay(tag)}
+                  </a>
+                ))}
+              </div>
+            )}
+            {project.technologies && project.technologies.length > 0 && (
+              <div class="project-technologies">
+                {project.technologies.map((tech) => (
+                  <span class="technology-tag">{tech}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
   </div>
+
+  <style>
+    .projects-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .projects-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .projects-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--theme-text);
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .projects-subtitle {
+      font-size: 1.2rem;
+      color: var(--theme-quote);
+      font-style: italic;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .project-card {
+      background: var(--theme-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .project-content {
+      padding: 2rem;
+    }
+
+    .project-title {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .project-title a {
+      color: var(--theme-text);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .project-title a:hover {
+      color: var(--theme-accent);
+    }
+
+    .project-description {
+      margin: 0 0 1.5rem 0;
+      color: var(--theme-quote);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .project-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .project-category {
+      background: var(--theme-accent);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .project-status {
+      background: var(--theme-quote);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .project-tag {
+      background: var(--theme-accent);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .project-tag:hover {
+      background: var(--theme-accent-dark, #1a4d3a);
+      transform: translateY(-1px);
+    }
+
+    .project-technologies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .technology-tag {
+      background: var(--theme-bg);
+      color: var(--theme-text);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid var(--theme-accent);
+    }
+
+    @media (max-width: 768px) {
+      .projects-page {
+        padding: 1rem;
+      }
+
+      .projects-title {
+        font-size: 2rem;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .project-content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </PageLayout>

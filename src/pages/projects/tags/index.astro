@@ -1,37 +1,37 @@
 ---
 import PageLayout from "@/layouts/Base";
+import { getAllProjects } from "@/lib/projects.data";
 import { getUniqueTagsWithCountFromTags, getTagSlug, formatTagForDisplay } from "@/utils";
-import { getCollection } from "astro:content";
 
-const allPosts = await getCollection("post");
-const allTags = getUniqueTagsWithCountFromTags(allPosts.map(post => ({ tags: post.data.tags })));
+const allProjects = await getAllProjects();
+const allTags = getUniqueTagsWithCountFromTags(allProjects);
 
 const meta = {
-	title: "All Tags",
-	description: "All Tags from my blogs",
+	title: "Project Tags",
+	description: "Browse projects by tags and categories",
 };
 export const prerender = true;
 ---
 
 <PageLayout meta={meta}>
-	<div class="tags-page">
-		<header class="tags-header">
-			<h1 class="tags-title">Tags</h1>
-			<p class="tags-subtitle">All tags from my blog posts</p>
+	<div class="project-tags-page">
+		<header class="project-tags-header">
+			<h1 class="project-tags-title">Project Tags</h1>
+			<p class="project-tags-subtitle">Browse projects by tags and categories</p>
 		</header>
 
 		<div class="tags-grid">
 			{Object.entries(allTags).map(([tag, val]) => (
 				<article class="tag-card">
 					<a
-						href={`/tags/${getTagSlug(tag)}`}
-						title={`View posts with the tag: ${formatTagForDisplay(tag)}`}
+						href={`/projects/tags/${getTagSlug(tag)}`}
+						title={`View projects with the tag: ${formatTagForDisplay(tag)}`}
 						rel="prefetch"
 						class="tag-link"
 					>
 						<h3 class="tag-name">#{formatTagForDisplay(tag)}</h3>
 						<p class="tag-count">
-							{val} Post{val > 1 ? "s" : ""}
+							{val} Project{val > 1 ? "s" : ""}
 						</p>
 					</a>
 				</article>
@@ -40,18 +40,18 @@ export const prerender = true;
 	</div>
 
 	<style>
-		.tags-page {
+		.project-tags-page {
 			max-width: 1200px;
 			margin: 0 auto;
 			padding: 2rem;
 		}
 
-		.tags-header {
+		.project-tags-header {
 			text-align: center;
 			margin-bottom: 3rem;
 		}
 
-		.tags-title {
+		.project-tags-title {
 			font-size: 3rem;
 			font-weight: 700;
 			margin-bottom: 1rem;
@@ -61,7 +61,7 @@ export const prerender = true;
 			letter-spacing: 1px;
 		}
 
-		.tags-subtitle {
+		.project-tags-subtitle {
 			font-size: 1.2rem;
 			color: var(--theme-quote);
 			font-style: italic;
@@ -112,11 +112,11 @@ export const prerender = true;
 		}
 
 		@media (max-width: 768px) {
-			.tags-page {
+			.project-tags-page {
 				padding: 1rem;
 			}
 
-			.tags-title {
+			.project-tags-title {
 				font-size: 2rem;
 			}
 

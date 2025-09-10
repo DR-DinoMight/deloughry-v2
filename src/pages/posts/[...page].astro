@@ -3,9 +3,8 @@ import type { Page, GetStaticPathsOptions } from "astro";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import PageLayout from "@/layouts/Base";
-import PostPreview from "@/components/blog/PostPreview";
 import Pagination from "@/components/Paginator";
-import { getUniqueTags, sortMDByDate } from "@/utils";
+import { getUniqueTags, sortMDByDate, getFormattedDate, getTagSlug, formatTagForDisplay } from "@/utils";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 	const allPosts = await getCollection("post");
@@ -19,7 +18,7 @@ interface Props {
 	uniqueTags: string[];
 }
 
-const { page, uniqueTags } = Astro.props;
+const { page } = Astro.props;
 
 const meta = {
 	title: "Posts",
@@ -44,62 +43,184 @@ export const prerender = true;
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-6">Posts</h1>
-	<div class="grid gap-y-16 sm:grid-cols-[3fr_1fr] sm:gap-x-8">
-		<section aria-label="Blog post list">
-			<ul class="space-y-8 text-left">
-				{
-					page.data.flatMap((p) => (
-						<li class="flex flex-col flex-wrap gap-x-2 sm:flex-row [&_q]:w-full">
-							<PostPreview post={p} as="h2" withDesc />
-						</li>
-					))
-				}
-			</ul>
-			<Pagination {...paginationProps} />
-		</section>
-		{
-			uniqueTags.length && (
-				<aside>
-					<h2 class="mb-4 flex items-center text-lg font-semibold">
-						<svg
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							fill="none"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						>
-							<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-							<path d="M7.859 6h-2.834a2.025 2.025 0 0 0 -2.025 2.025v2.834c0 .537 .213 1.052 .593 1.432l6.116 6.116a2.025 2.025 0 0 0 2.864 0l2.834 -2.834a2.025 2.025 0 0 0 0 -2.864l-6.117 -6.116a2.025 2.025 0 0 0 -1.431 -.593z" />
-							<path d="M17.573 18.407l2.834 -2.834a2.025 2.025 0 0 0 0 -2.864l-7.117 -7.116" />
-							<path d="M6 9h-.01" />
-						</svg>
-						Tags
-					</h2>
-					<ul class="flex flex-wrap gap-2 ">
-						{uniqueTags.flatMap((tag) => (
-							<li>
-								<a
-									class="flex items-center justify-center rounded-lg  bg-zinc-200 p-2 ring-zinc-400 transition-all hover:ring-2 dark:bg-zinc-700"
-									href={`/tags/${tag}`}
-									aria-label={`View all posts with the tag: ${tag}`}
-								>
-									{tag}
-								</a>
-							</li>
-						))}
-					</ul>
-					<span class="mt-4 block sm:text-right">
-						<a class="sm:hover:text-accent" href="/tags" aria-label="View all blog categories">
-							View all →
-						</a>
-					</span>
-				</aside>
-			)
-		}
+	<div class="posts-listing">
+		<header class="posts-header">
+			<h1 class="posts-title">Posts</h1>
+			<p class="posts-subtitle">Thoughts, tutorials, and insights on web development and technology</p>
+		</header>
+
+		<div class="posts-grid">
+			{page.data.map((p) => (
+				<article class="post-card">
+					{p.data.ogImage && (
+						<div class="post-card-image">
+							<img src={p.data.ogImage} alt={p.data.title} />
+						</div>
+					)}
+					<div class="post-card-content">
+						<time datetime={p.data.publishDate.toISOString()} class="post-card-date">
+							{getFormattedDate(new Date(p.data.publishDate), { month: "short" })}
+						</time>
+						<h2 class="post-card-title">
+							<a href={`/posts/${p.slug}/`}>{p.data.title}</a>
+						</h2>
+						{p.data.description && <p class="post-card-description">{p.data.description}</p>}
+						{p.data.tags && p.data.tags.length > 0 && (
+							<div class="post-card-tags">
+								{p.data.tags.map((tag) => (
+									<a href={`/tags/${getTagSlug(tag)}`} class="tag" title={`View posts with tag: ${formatTagForDisplay(tag)}`}>
+										{formatTagForDisplay(tag)}
+									</a>
+								))}
+							</div>
+						)}
+					</div>
+				</article>
+			))}
+		</div>
+
+		<Pagination {...paginationProps} />
 	</div>
+
+	<style>
+		.posts-listing {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 2rem;
+		}
+
+		.posts-header {
+			text-align: center;
+			margin-bottom: 3rem;
+		}
+
+		.posts-title {
+			font-size: 3rem;
+			font-weight: 700;
+			margin-bottom: 1rem;
+			color: var(--theme-text);
+			font-family: 'Oswald', sans-serif;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+		}
+
+		.posts-subtitle {
+			font-size: 1.2rem;
+			color: var(--theme-quote);
+			font-style: italic;
+		}
+
+		.posts-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+			gap: 2rem;
+			margin-bottom: 3rem;
+		}
+
+		.post-card {
+			background: var(--theme-bg);
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.post-card:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+		}
+
+		.post-card-image {
+			position: relative;
+			overflow: hidden;
+			height: 200px;
+		}
+
+		.post-card-image img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			filter: grayscale(100%);
+			transition: filter 0.3s ease;
+		}
+
+		.post-card:hover .post-card-image img {
+			filter: grayscale(0%);
+		}
+
+		.post-card-content {
+			padding: 1.5rem;
+		}
+
+		.post-card-date {
+			display: block;
+			font-size: 0.9rem;
+			color: var(--theme-accent);
+			font-weight: 600;
+			margin-bottom: 0.5rem;
+		}
+
+		.post-card-title {
+			margin: 0 0 0.75rem 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+			font-family: 'Oswald', sans-serif;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.post-card-title a {
+			color: var(--theme-text);
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
+
+		.post-card-title a:hover {
+			color: var(--theme-accent);
+		}
+
+		.post-card-description {
+			margin: 0 0 1rem 0;
+			color: var(--theme-quote);
+			font-style: italic;
+			line-height: 1.5;
+		}
+
+		.post-card-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+
+		.tag {
+			background: var(--theme-accent);
+			color: white;
+			padding: 0.25rem 0.75rem;
+			border-radius: 20px;
+			font-size: 0.9rem;
+			font-weight: 500;
+			text-decoration: none;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+		}
+
+		.tag:hover {
+			background: var(--theme-accent-dark, #1a4d3a);
+			transform: translateY(-1px);
+		}
+
+		@media (max-width: 768px) {
+			.posts-listing {
+				padding: 1rem;
+			}
+
+			.posts-title {
+				font-size: 2rem;
+			}
+
+			.posts-grid {
+				grid-template-columns: 1fr;
+				gap: 1.5rem;
+			}
+		}
+	</style>
 </PageLayout>
