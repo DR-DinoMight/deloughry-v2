@@ -35,7 +35,8 @@ export default defineConfig({
         "script-src": [
           "'self'",
           "https://cdn.jsdelivr.net",
-          "https://umami-ss8o8so.loki.m4p.uk",
+          "https://umami-ss8o8so.loki.m4p.uk"
+        ],
         "style-src": ["'self'", "'unsafe-inline'", "https://fonts.bunny.net"],
         "style-src-elem": ["'self'", "'unsafe-inline'", "https://fonts.bunny.net"],
         "font-src": ["'self'", "https://fonts.bunny.net", "data:"],
