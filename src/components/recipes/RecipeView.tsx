@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import '../../styles/recipe-book.css';
 import type { ParsedRecipe } from '../../lib/cooklang';
 
 export default function RecipeView({ recipe }: { recipe: ParsedRecipe }) {

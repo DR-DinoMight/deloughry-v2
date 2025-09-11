@@ -24,8 +24,7 @@ const meta = {
 
 <BaseLayout meta={meta}>
 	<RecipeSchema recipe={recipe} />
-	<RecipeView client:load recipe={recipe} />
-	<link rel="stylesheet" href="/src/styles/recipe-book.css" />
+	<RecipeView client:only="react" recipe={recipe} />
 </BaseLayout>
 
 
