@@ -28,6 +28,30 @@ export default defineConfig({
   experimental: {
     csp: true
   },
+  security: {
+    contentSecurityPolicy: {
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": [
+          "'self'",
+          "https://cdn.jsdelivr.net",
+          "https://umami-ss8o8so.loki.m4p.uk",
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.bunny.net"],
+        "style-src-elem": ["'self'", "'unsafe-inline'", "https://fonts.bunny.net"],
+        "font-src": ["'self'", "https://fonts.bunny.net", "data:"],
+        "img-src": ["'self'", "data:", "blob:", "https:"],
+        "connect-src": [
+          "'self'",
+          "https://umami-ss8o8so.loki.m4p.uk",
+        ],
+        "media-src": ["'self'", "https:"],
+        "object-src": ["'none'"],
+        "base-uri": ["'self'"],
+        "form-action": ["'self'"],
+        "frame-ancestors": ["'self'"]
+      }
+    }
+  },
   vite: {
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"]
